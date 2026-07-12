@@ -84,6 +84,8 @@
     <model-viewer 
         id="buildingViewer"
         src="building.glb"
+        environment-image="HDRI_puresky_1k.hdr"
+        skybox-image="HDRI_puresky_1k.hdr"
         camera-controls
         auto-rotate
         ar
@@ -93,7 +95,6 @@
         exposure="1.2"
         alt="Interactive 3D view of the campus">
     </model-viewer>
-
     <div class="ui-panel">
         <select id="modelSelector">
             <option value="building.glb">Main Building (Present)</option>
