@@ -160,8 +160,7 @@
         </select>
         
         <div class="divider"></div>
-
-        <button id="fppBtn">Stand in Courtyard</button>
+        
         <button id="toggleRotation">Pause Rotation</button>
         <button id="resetCam">Reset View</button>
     </div>
@@ -172,7 +171,6 @@
         const resetBtn = document.getElementById('resetCam');
         const modelSelector = document.getElementById('modelSelector');
         const loadingOverlay = document.getElementById('loadingOverlay');
-        const fppBtn = document.getElementById('fppBtn');
 
         // Show the loading screen when a new model is selected
         modelSelector.addEventListener('change', (event) => {
@@ -194,36 +192,6 @@
                 viewer.setAttribute('auto-rotate', '');
                 rotateBtn.innerText = "Pause Rotation";
             }
-        });
-
-        // First-Person "Street View" Mode
-        fppBtn.addEventListener('click', () => {
-            // Stop rotation if it's spinning
-            viewer.removeAttribute('auto-rotate');
-            rotateBtn.innerText = "Start Rotation";
-
-            // Move the focal point inside the campus (X, Y, Z coordinates)
-            // Y is set to 1.6m (average human eye level)
-            viewer.cameraTarget = "0m 1.6m 0m"; 
-            
-            // Pull the camera directly into the target and restrict zooming
-            viewer.cameraOrbit = "0deg 90deg 0m";
-            viewer.minCameraOrbit = "auto auto 0m"; 
-            viewer.maxCameraOrbit = "auto 90deg 0m"; 
-        });
-
-        // Update your existing Reset Button to undo the First-Person lock
-        resetBtn.addEventListener('click', () => {
-            viewer.cameraTarget = "auto auto auto";
-            viewer.cameraOrbit = "0deg 85deg auto";
-            viewer.minCameraOrbit = "auto auto auto"; // Unlock zoom
-            viewer.maxCameraOrbit = "auto 90deg auto"; 
-        });
-
-        // Reset the camera back to its default ground-level viewing angle
-        resetBtn.addEventListener('click', () => {
-            viewer.cameraOrbit = "0deg 85deg auto";
-            viewer.cameraTarget = "auto auto auto";
         });
     </script>
 </body>
