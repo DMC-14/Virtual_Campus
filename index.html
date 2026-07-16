@@ -425,6 +425,36 @@
                 rotateBtn.innerText = "Pause Rotation";
             }
         });
+        // 1. Only change the file when the dropdown is clicked
+        modelSelector.addEventListener('change', (event) => {
+            loadingOverlay.classList.add('active'); 
+            viewer.src = event.target.value;        
+        });
+
+        // 2. Wait for the model to FULLY load before applying camera rules
+        viewer.addEventListener('load', () => {
+            loadingOverlay.classList.remove('active'); 
+            
+            // SMART CAMERA LOGIC
+            if (viewer.src.includes('Old_Sagay_Campus.glb')) {
+                // Settings for the Old Campus
+                viewer.cameraTarget = '0m 0m 0m'; 
+                viewer.cameraOrbit = '0deg 75deg 30m'; 
+                viewer.maxCameraOrbit = 'auto 90deg 50m'; 
+                
+                // NEW: Stop the camera from zooming closer than 15 meters
+                viewer.minCameraOrbit = 'auto auto 15m'; 
+
+            } else {
+                // Settings for the Main Building
+                viewer.cameraTarget = 'auto auto auto';
+                viewer.cameraOrbit = '0deg 85deg auto';
+                viewer.maxCameraOrbit = 'auto 90deg auto';
+                
+                // NEW: Reset the minimum zoom to default so they can get close
+                viewer.minCameraOrbit = 'auto auto auto'; 
+            }
+        });
         
         // Reset Camera
         resetBtn.addEventListener('click', () => {
