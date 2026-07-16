@@ -3,7 +3,7 @@
 This repository hosts the 3D assets and web interface for my college research capstone project. It features an interactive, web-based 3D viewer designed for seamless architectural exploration and navigation of the SUNN campuses.
 
 🚀 **Live Demo**
-Experience the 3D viewer here: [Interactive Campus Viewer](#)
+Experience the 3D viewer here: [Interactive Campus Viewer](https://dmc-14.github.io/Virtual_Campus/)
 
 ✨ **Features**
 * **Interactive UI Navigation:** A custom, dark-mode sidebar menu allows users to seamlessly switch between different campus structures and isolate specific administrative or academic buildings.
