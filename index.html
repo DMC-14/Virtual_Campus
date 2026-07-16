@@ -349,18 +349,12 @@
         skybox-image="HDRI_puresky_1k.hdr"
         camera-controls
         auto-rotate
-
-        camera-target="0m 0m 0m"
-        
-        camera-orbit="0deg 75deg 10m"
-        
-        max-camera-orbit="auto 90deg 20m"
-        
+        camera-orbit="0deg 85deg auto"
+        max-camera-orbit="auto 90deg auto"
         ar
         ar-modes="webxr scene-viewer quick-look"
-        shadow-intensity="2"
-        shadow-softness="0.8"
-        alt="Interactive 3D view of the campus">
+        shadow-intensity="1.5"
+        shadow-softness="0.8">
     </model-viewer>
 
     <div class="ui-panel">
@@ -428,6 +422,26 @@
             } else {
                 viewer.setAttribute('auto-rotate', '');
                 rotateBtn.innerText = "Pause Rotation";
+            }
+        });
+        // Show the loading screen and adjust camera when a new model is selected
+        modelSelector.addEventListener('change', (event) => {
+            loadingOverlay.classList.add('active'); // Make pop-up visible
+            
+            const selectedModel = event.target.value;
+            viewer.src = selectedModel; // Start loading new model
+
+            // SMART CAMERA LOGIC
+            if (selectedModel === 'Old_Sagay_Campus.glb') {
+                // Apply strict zoom limits for the giant map
+                viewer.setAttribute('camera-target', '0m 0m 0m'); 
+                viewer.setAttribute('camera-orbit', '0deg 75deg 30m'); // Default starting zoom
+                viewer.setAttribute('max-camera-orbit', 'auto 90deg 50m'); // Max zoom out limit
+            } else {
+                // Unlock the camera for the normal Main Building
+                viewer.removeAttribute('camera-target');
+                viewer.setAttribute('camera-orbit', '0deg 85deg auto');
+                viewer.setAttribute('max-camera-orbit', 'auto 90deg auto');
             }
         });
         
