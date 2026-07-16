@@ -424,24 +424,27 @@
                 rotateBtn.innerText = "Pause Rotation";
             }
         });
-        // Show the loading screen and adjust camera when a new model is selected
+        // 1. Only change the file when the dropdown is clicked
         modelSelector.addEventListener('change', (event) => {
-            loadingOverlay.classList.add('active'); // Make pop-up visible
-            
-            const selectedModel = event.target.value;
-            viewer.src = selectedModel; // Start loading new model
+            loadingOverlay.classList.add('active'); // Show loading screen
+            viewer.src = event.target.value;        // Start downloading new model
+        });
 
-            // SMART CAMERA LOGIC
-            if (selectedModel === 'Old_Sagay_Campus.glb') {
-                // Apply strict zoom limits for the giant map
-                viewer.setAttribute('camera-target', '0m 0m 0m'); 
-                viewer.setAttribute('camera-orbit', '0deg 75deg 30m'); // Default starting zoom
-                viewer.setAttribute('max-camera-orbit', 'auto 90deg 50m'); // Max zoom out limit
+        // 2. Wait for the model to FULLY load before applying camera rules
+        viewer.addEventListener('load', () => {
+            loadingOverlay.classList.remove('active'); // Hide loading screen
+            
+            // SMART CAMERA LOGIC: Check if the loaded file name contains "Old_Sagay"
+            if (viewer.src.includes('Old_Sagay_Campus.glb')) {
+                // Lock the camera to the courtyard and strict zoom limits
+                viewer.cameraTarget = '0m 0m 0m'; 
+                viewer.cameraOrbit = '0deg 75deg 30m'; 
+                viewer.maxCameraOrbit = 'auto 90deg 50m'; 
             } else {
-                // Unlock the camera for the normal Main Building
-                viewer.removeAttribute('camera-target');
-                viewer.setAttribute('camera-orbit', '0deg 85deg auto');
-                viewer.setAttribute('max-camera-orbit', 'auto 90deg auto');
+                // Unlock the camera for the Main Building
+                viewer.cameraTarget = 'auto auto auto';
+                viewer.cameraOrbit = '0deg 85deg auto';
+                viewer.maxCameraOrbit = 'auto 90deg auto';
             }
         });
         
