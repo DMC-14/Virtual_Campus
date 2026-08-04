@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive 3D Campus Viewer</title>
+    <title>Interactive Vicinity Map - SUNN Campuses</title>
     
-    <!-- ADD THIS LINE FOR THE TAB ICON -->
+    <!-- Tab Icon -->
     <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Import League Spartan from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
     
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
@@ -19,7 +24,7 @@
             padding: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #eceff1;
+            background-color: #1a1a1a;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
@@ -30,55 +35,130 @@
         model-viewer {
             width: 100%;
             flex-grow: 1;
-            background-color: #ffffff;
+            background-color: #2b2b2b;
             --poster-color: transparent;
         }
         
-        /* Neat UI Overlay Panel */
-        .ui-panel {
+        /* --- TOP BRANDING HEADER (Artboard 2) --- */
+        .top-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-placeholder {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+        .campus-title {
+            font-family: 'League Spartan', 'Segoe UI', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            max-width: 520px;
+            line-height: 1.15;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- MIKADO YELLOW CAPSTONE BUTTON STYLING --- */
+        .sunn-btn {
+            font-family: 'League Spartan', 'Segoe UI', sans-serif;
+            background-color: #FBBD0D; /* Mikado Yellow */
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .sunn-btn:hover {
+            background-color: #E0A80B; /* Deeper Mikado Hover State */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+        }
+        .sunn-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Square Icon Buttons (Top Right) */
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #1a1a1a;
+        }
+
+        /* --- FLOATING CONTROLS --- */
+        .top-right-floating {
+            position: absolute;
+            top: 86px;
+            right: 24px;
+            z-index: 10;
+        }
+        
+        .bottom-controls {
             position: absolute;
             bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95);
-            padding: 16px;
+            padding: 12px 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            backdrop-filter: blur(6px);
             display: flex;
-            gap: 12px;
             align-items: center;
+            gap: 14px;
             flex-wrap: wrap;
             justify-content: center;
             z-index: 10;
         }
         
-        button, select {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: inherit;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        button {
-            background-color: #0288d1;
-            color: white;
-        }
-        button:hover {
-            background-color: #01579b;
-        }
-        select {
-            background-color: #f1f3f4;
-            color: #333;
+        .bottom-controls select {
+            font-family: 'League Spartan', 'Segoe UI', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
             border: 1px solid #cfd8dc;
+            background-color: #f8f9fa;
+            color: #1a1a1a;
             outline: none;
+            cursor: pointer;
         }
-        select:focus {
-            border-color: #0288d1;
-        }
+        
         .divider {
             width: 1px;
             height: 24px;
@@ -86,40 +166,20 @@
             margin: 0 4px;
         }
 
-        /* Top Right Menu Button */
-        #menu-btn {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            background: rgba(15, 15, 15, 0.85);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            letter-spacing: 2px;
-            z-index: 15;
-            backdrop-filter: blur(4px);
-        }
-        #menu-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* About Modal Overlay */
+        /* --- ABOUT MODAL OVERLAY --- */
         #about-modal {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 50; /* Below title card, above UI */
+            z-index: 50;
             transition: opacity 0.3s ease, visibility 0.3s;
         }
-        
         .modal-content {
             background: #1a1a1a;
             color: #aaaaaa;
@@ -132,15 +192,15 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             line-height: 1.6;
         }
-        
         .modal-content h2 {
+            font-family: 'League Spartan', sans-serif;
             color: #ffffff;
             margin-top: 0;
             letter-spacing: 1px;
             margin-bottom: 15px;
         }
-        
         .modal-content h3 {
+            font-family: 'League Spartan', sans-serif;
             color: #ffffff;
             font-size: 16px;
             margin-top: 25px;
@@ -148,20 +208,16 @@
             border-bottom: 1px solid #333;
             padding-bottom: 5px;
         }
-        
         .modal-content ul {
             padding-left: 20px;
             margin-bottom: 25px;
         }
-        
         .modal-content li {
             margin-bottom: 10px;
         }
-        
         .modal-content li strong {
             color: #dddddd;
         }
-        
         .developer-credit {
             font-size: 13px;
             color: #888888;
@@ -170,7 +226,6 @@
             padding-top: 15px;
             margin-top: 10px;
         }
-
         .close-btn {
             position: absolute;
             top: 20px;
@@ -178,27 +233,26 @@
             background: transparent;
             color: #aaaaaa;
             font-size: 24px;
-            padding: 0;
+            border: none;
+            cursor: pointer;
             width: 30px;
             height: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        
         .close-btn:hover {
             color: #ffffff;
-            background: rgba(255,255,255,0.1);
         }
 
-        /* Loading Screen Overlay CSS */
+        /* --- LOADING SCREEN OVERLAY --- */
         #loadingOverlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
@@ -228,7 +282,7 @@
             width: 30px;
             height: 30px;
             border: 4px solid #cfd8dc;
-            border-top-color: #0288d1;
+            border-top-color: #FBBD0D; /* Mikado Yellow Accent */
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -236,7 +290,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Title Card Overlay */
+        /* --- TITLE CARD OVERLAY --- */
         #title-card {
             position: absolute;
             top: 0;
@@ -257,13 +311,15 @@
             padding: 40px;
         }
         .title-content h1 {
-            font-size: 32px;
+            font-family: 'League Spartan', sans-serif;
+            font-size: 34px;
             letter-spacing: 4px;
             margin: 0 0 5px 0;
         }
         .title-content h2 {
+            font-family: 'League Spartan', sans-serif;
             font-size: 14px;
-            color: #ff4444; 
+            color: #FBBD0D; /* Mikado Yellow Accent */
             letter-spacing: 3px;
             margin: 0 0 25px 0;
         }
@@ -274,19 +330,21 @@
             margin-bottom: 40px;
         }
         #enter-btn {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-            padding: 15px 40px;
+            font-family: 'League Spartan', sans-serif;
+            background: #FBBD0D;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 38px;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 800;
             letter-spacing: 2px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         #enter-btn:hover {
-            background: white;
-            color: #111111;
+            background: #E0A80B;
+            transform: translateY(-2px);
         }
         
         /* Utility class to hide overlays */
@@ -294,6 +352,15 @@
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
+        }
+
+        /* Responsive scaling for smaller screens */
+        @media (max-width: 768px) {
+            .campus-title { font-size: 11px; max-width: 230px; }
+            .top-header { padding: 0 12px; height: 60px; }
+            .top-right-floating { top: 72px; right: 12px; }
+            .sunn-btn { padding: 8px 14px; font-size: 11px; }
+            .bottom-controls { width: 92%; bottom: 12px; gap: 8px; }
         }
     </style>
 </head>
@@ -329,18 +396,44 @@
         </div>
     </div>
 
-    <!-- Top Right Menu Button -->
-    <button id="menu-btn">☰ MENU</button>
+    <!-- TOP INSTITUTIONAL HEADER (Artboard 2 Style) -->
+    <header class="top-header">
+        <div class="header-left">
+           <!-- <img src="SUNN.png" alt="SUNN Logo" class="logo-placeholder" onerror="this.style.display='none'"> -->
+            <div class="campus-title">
+             <!--    Interactive Vicinity Map of State University of Northern Negros Campuses -->
+            </div>
+        </div>
+        <div class="header-right">
+            <!-- Search Button -->
+            <button class="sunn-btn icon-btn" title="Search Campus Areas" id="searchBtn">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+            <!-- Info Button (Opens About Modal) -->
+            <button class="sunn-btn icon-btn" title="Project Information" id="infoBtn">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            </button>
+            <!-- Menu Button (Opens About Modal) -->
+            <button class="sunn-btn icon-btn" title="Open Navigation Menu" id="menu-btn">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- FLOATING TOP-RIGHT BUTTON -->
+    <div class="top-right-floating">
+        <button class="sunn-btn" id="toggleRotation">Pause Rotation</button>
+    </div>
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay">
         <div class="loading-box">
             <div class="spinner"></div>
-            <span>Loading Model...</span>
+            <span>Loading Campus Map...</span>
         </div>
     </div>
 
-    <!-- 3D Viewer with HDRI and Camera Limits -->
+    <!-- MAIN 3D VIEWER -->
     <model-viewer 
         id="buildingViewer"
         src="building.glb"
@@ -349,73 +442,86 @@
         skybox-image="HDRI_puresky_1k.hdr"
         camera-controls
         auto-rotate
-        camera-orbit="0deg 85deg auto"
+        bounds="tight"
+        camera-orbit="0deg 85deg 40m"
+        camera-target="auto auto auto"
+        min-camera-orbit="auto auto auto"
         max-camera-orbit="auto 90deg auto"
         ar
         ar-modes="webxr scene-viewer quick-look"
-        shadow-intensity="1.5"
-        shadow-softness="0.8"
+        exposure="0.8"
+        shadow-intensity="3.2"
+        shadow-softness="1.2"
+        tone-mapping="aces"
         alt="Interactive 3D view of the campus">
     </model-viewer>
 
-    <div class="ui-panel">
-        <select id="modelSelector">
+    <!-- FLOATING BOTTOM-CENTER CONTROLS -->
+    <div class="bottom-controls">
+        <!-- Model Dropdown -->
+        <select id="modelSelector" aria-label="Select Campus Model">
             <option value="building.glb">Main Building (Present)</option>
             <option value="Old_Sagay_Campus.glb">Old Campus Compound</option>
         </select>
         
         <div class="divider"></div>
-        
-        <button id="toggleRotation">Pause Rotation</button>
-        <button id="resetCam">Reset View</button>
+
+        <!-- Interactive Action Buttons -->
+        <button class="sunn-btn" id="hotspotBtn">Hotspot</button>
+        <button class="sunn-btn" id="resetCam">Reset View</button>
     </div>
 
     <script>
         const viewer = document.getElementById('buildingViewer');
         const rotateBtn = document.getElementById('toggleRotation');
         const resetBtn = document.getElementById('resetCam');
+        const hotspotBtn = document.getElementById('hotspotBtn');
         const modelSelector = document.getElementById('modelSelector');
         const loadingOverlay = document.getElementById('loadingOverlay');
         
         // Modal & Menu Variables
         const menuBtn = document.getElementById('menu-btn');
+        const infoBtn = document.getElementById('infoBtn');
         const aboutModal = document.getElementById('about-modal');
         const closeAboutBtn = document.getElementById('close-about-btn');
 
-        // Hide Title Card on Click
+        // 1. Hide Title Card on Click
         document.getElementById('enter-btn').addEventListener('click', () => {
             document.getElementById('title-card').classList.add('hidden');
         });
 
-        // Open About Modal
+        // 2. Open About Modal (Menu & Info buttons both trigger it)
         menuBtn.addEventListener('click', () => {
             aboutModal.classList.remove('hidden');
         });
+        infoBtn.addEventListener('click', () => {
+            aboutModal.classList.remove('hidden');
+        });
 
-        // Close About Modal
+        // 3. Close About Modal
         closeAboutBtn.addEventListener('click', () => {
             aboutModal.classList.add('hidden');
         });
-
-        // Close About Modal if clicking outside the content box
         aboutModal.addEventListener('click', (event) => {
             if (event.target === aboutModal) {
                 aboutModal.classList.add('hidden');
             }
         });
 
-        // Show the loading screen when a new model is selected
+        // 4. Show loading screen when a new model is selected
         modelSelector.addEventListener('change', (event) => {
             loadingOverlay.classList.add('active'); 
             viewer.src = event.target.value;        
         });
 
-        // Hide the loading screen exactly when the model finishes loading
+        // 5. Hide loading screen when the model finishes loading
         viewer.addEventListener('load', () => {
             loadingOverlay.classList.remove('active');
+            viewer.cameraTarget = "auto auto auto";
+            viewer.cameraOrbit = "0deg 85deg 200m";
         });
 
-        // Toggle auto-rotation feature
+        // 6. Toggle Auto-Rotation
         rotateBtn.addEventListener('click', () => {
             if (viewer.hasAttribute('auto-rotate')) {
                 viewer.removeAttribute('auto-rotate');
@@ -425,10 +531,17 @@
                 rotateBtn.innerText = "Pause Rotation";
             }
         });
-        
-        // Reset Camera
+
+        // 7. Reset View back to Default
         resetBtn.addEventListener('click', () => {
-            viewer.cameraOrbit = "0deg 85deg auto";
+            viewer.cameraOrbit = "45deg 85deg 180m";
+            viewer.cameraTarget = "auto auto auto";
+            viewer.orientation = "0deg 0deg 0deg";
+        });
+
+        // 8. Hotspot Placeholder Notice
+        hotspotBtn.addEventListener('click', () => {
+            alert("Hotspot markers will be connected here!");
         });
     </script>
 </body>
