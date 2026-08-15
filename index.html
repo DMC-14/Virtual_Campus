@@ -444,7 +444,7 @@
             
             <div class="custom-dropdown" id="campusDropdownContainer" style="width: 100%; max-width: 250px;">
                 <button class="dropdown-trigger" id="campusTrigger">
-                    <span id="campusTriggerText">SELECT CAMPUS</span>
+                    <span id="campusTriggerText">MAIN CAMPUS</span>
                     <span class="chevron">▼</span>
                 </button>
                 <div class="dropdown-content top-dropdown" id="campusContent">
@@ -524,7 +524,9 @@
             </button>
             
             <div class="dropdown-content bottom-dropdown" id="destContent">
-                <div class="destination-grid">
+                
+                <!-- 1. OLD SAGAY DESTINATIONS -->
+                <div class="destination-grid" id="grid-old-sagay" style="display: none;">
                     <button class="dest-item" data-value="to_cals_office">CALSS OFFICE</button>
                     <button class="dest-item" data-value="to_ccis_office">CCIS OFFICE</button>
                     <button class="dest-item" data-value="to_cfins_office">CFINS OFFICE</button>
@@ -537,11 +539,22 @@
                     <button class="dest-item" data-value="none">TNF OFFICE</button>
                 </div>
 
-                <!-- MAIN CAMPUS DESTINATIONS (Hidden by default) -->
-                <div class="destination-grid" id="grid-main" style="display: none;">
+                <!-- 2. MAIN CAMPUS DESTINATIONS (Now visible by default) -->
+                <div class="destination-grid" id="grid-main">
                     <button class="dest-item" data-value="none">MAIN DEST 1</button>
                     <button class="dest-item" data-value="none">MAIN DEST 2</button>
                 </div>
+
+                <!-- 3. ESCALANTE CAMPUS DESTINATIONS -->
+                <div class="destination-grid" id="grid-escalante">
+                    <button class="dest-item" data-value="none">ESCALANTE DEST 1</button>
+                </div>
+
+                <!-- 4. LAGA-AN CAMPUS DESTINATIONS -->
+                <div class="destination-grid" id="grid-lagaan">
+                    <button class="dest-item" data-value="none">LAGA-AN DEST 1</button>
+                </div>
+
             </div>
         </div>
 
@@ -690,29 +703,38 @@
             destContainer.classList.remove('open');
         });
 
-        // Select a Campus logic
+       // Select a Campus logic
         campusItems.forEach(item => {
             item.addEventListener('click', (e) => {
-                const val = e.target.getAttribute('data-value');
-                const text = e.target.innerText.trim();
+                // e.currentTarget is safer than e.target to prevent misclicks
+                const val = e.currentTarget.getAttribute('data-value');
+                const text = e.currentTarget.innerText.trim();
                 
                 // 1. Close the dropdown first
                 campusContainer.classList.remove('open');
                 
-                // 2. Update Top Text and Swap Destination Grids IMMEDIATELY
+                // 2. Update Top Text
                 campusTriggerText.innerText = text;
                 
-                document.getElementById('grid-old-sagay').style.display = 'none';
-                document.getElementById('grid-main').style.display = 'none';
+                // 3. SAFELY hide all grids (This prevents the 'null' crash!)
+                const grids = ['grid-old-sagay', 'grid-main', 'grid-escalante', 'grid-lagaan'];
+                grids.forEach(id => {
+                    const grid = document.getElementById(id);
+                    if (grid) grid.style.display = 'none';
+                });
                 
-                // Check the URL of the .glb file to safely reveal the correct menu
-                if (val.includes("old_campus")) {
+                // Show the correct grid based on the campus name safely
+                if (text === "OLD SAGAY CAMPUS" && document.getElementById('grid-old-sagay')) {
                     document.getElementById('grid-old-sagay').style.display = 'grid';
-                } else if (val.includes("test.glb")) {
+                } else if (text === "MAIN CAMPUS" && document.getElementById('grid-main')) {
                     document.getElementById('grid-main').style.display = 'grid';
+                } else if (text === "ESCALANTE CAMPUS" && document.getElementById('grid-escalante')) {
+                    document.getElementById('grid-escalante').style.display = 'grid';
+                } else if (text === "LAGA-AN CAMPUS" && document.getElementById('grid-lagaan')) {
+                    document.getElementById('grid-lagaan').style.display = 'grid';
                 }
 
-                // 3. Force the UI to reset so paths don't bleed over
+                // 4. Force the UI to reset so paths don't bleed over
                 currentSelectedRoute = "none";
                 destTriggerText.innerText = "SELECT DESTINATION";
                 
@@ -722,14 +744,14 @@
                     hotspot.style.pointerEvents = 'none';
                 });
                 hotspotBtn.innerText = "Show Hotspots";
-                infoCard.classList.remove('active');
+                if (infoCard) infoCard.classList.remove('active');
 
-                // 4. Check if the 3D model needs reloading AFTER updating the UI
+                // 5. Check if the 3D model needs reloading AFTER updating the UI
                 if (viewer.src === val || viewer.src.includes(val)) {
                     return; 
                 }
                 
-                // 5. Start loading the new campus 3D model
+                // 6. Start loading the new campus 3D model
                 loadingOverlay.classList.add('active'); 
                 loadPercentage.innerText = "0%";
                 viewer.src = val;
