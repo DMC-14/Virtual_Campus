@@ -179,6 +179,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
+        // --- 0. AUTO-CLEAN .HTML FROM ADDRESS BAR ---
+        if (window.location.href.indexOf(".html") > -1) {
+            const cleanUrl = window.location.href.replace(".html", "");
+            window.history.replaceState(null, null, cleanUrl);
+        }
         // 1. INITIALIZE SUPABASE (Make sure to paste your real keys here!)
         const supabaseUrl = 'https://kmqivcvkwggjztwuxnbz.supabase.co'; 
         const supabaseKey = 'sb_publishable_2UoSLpca258Kf-N-MqEUzw_sABvTJsQ'; 
