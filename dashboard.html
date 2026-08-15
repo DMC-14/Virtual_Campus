@@ -184,10 +184,11 @@
         const supabaseKey = 'sb_publishable_2UoSLpca258Kf-N-MqEUzw_sABvTJsQ'; 
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. SECURITY CHECK
+        // 2. SECURITY CHECK (Using Session storage for GitHub Pages)
         async function checkAuth() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (!session) {
+                console.log("No session found, redirecting to login.");
                 window.location.replace("admin.html");
             }
         }
