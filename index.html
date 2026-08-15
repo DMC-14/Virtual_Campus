@@ -458,6 +458,11 @@
 
     </div>
 
+    <!-- TEMPORARY DEV TOOL BUTTON (Delete before presentation!) -->
+    <button id="devGetCamBtn" style="position: fixed; top: 90px; left: 24px; z-index: 9999; background: #ff0044; color: white; padding: 12px 20px; font-family: 'League Spartan', sans-serif; font-weight: bold; border-radius: 8px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer;">
+        📸 LOG CAMERA COORDS
+    </button>
+
     <!-- Import Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -812,30 +817,37 @@
             
             hotspotBtn.innerText = hotspotsVisible ? "Hide Hotspots" : "Show Hotspots";
         });
+        
         // ---------------------------------------------------------
-        // TEMPORARY DEV TOOL: Press "Spacebar" to log camera angles
+        // TEMPORARY DEV TOOL: Click button to log camera angles
         // ---------------------------------------------------------
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                const v = document.getElementById('buildingViewer');
-                const orbit = v.getCameraOrbit();
-                const target = v.getCameraTarget();
-                
-                // Convert radians to degrees for the orbit
-                const theta = (orbit.theta * (180 / Math.PI)).toFixed(0);
-                const phi = (orbit.phi * (180 / Math.PI)).toFixed(0);
-                const rad = orbit.radius.toFixed(0);
+        document.getElementById('devGetCamBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const v = document.getElementById('buildingViewer');
+            
+            // Grab raw camera data
+            const orbit = v.getCameraOrbit();
+            const target = v.getCameraTarget();
+            
+            // Convert radians to degrees for the orbit
+            const theta = (orbit.theta * (180 / Math.PI)).toFixed(0);
+            const phi = (orbit.phi * (180 / Math.PI)).toFixed(0);
+            const rad = orbit.radius.toFixed(0);
 
-                // Format the target coordinates
-                const tx = target.x.toFixed(2);
-                const ty = target.y.toFixed(2);
-                const tz = target.z.toFixed(2);
+            // Format the target coordinates
+            const tx = target.x.toFixed(2);
+            const ty = target.y.toFixed(2);
+            const tz = target.z.toFixed(2);
 
-                console.log("%c--- COPY THESE FOR SUPABASE ---", "color: #FBBD0D; font-weight: bold; font-size: 14px;");
-                console.log(`TARGET & POSITION: ${tx}m ${ty}m ${tz}m`);
-                console.log(`ORBIT: ${theta}deg ${phi}deg ${rad}m`);
-            }
+            // Print to console
+            console.log("%c--- COPY THESE FOR SUPABASE ---", "color: #ff0044; font-weight: bold; font-size: 16px;");
+            console.log(`TARGET & POSITION: ${tx}m ${ty}m ${tz}m`);
+            console.log(`ORBIT: ${theta}deg ${phi}deg ${rad}m`);
+            
+            // Also show an alert just in case the console is closed!
+            alert(`✅ Logged to Console!\n\nTarget: ${tx}m ${ty}m ${tz}m\nOrbit: ${theta}deg ${phi}deg ${rad}m`);
         });
+
     </script>
 </body>
 </html>
