@@ -110,10 +110,34 @@
             background-color: #E0A80B;
             transform: translateY(-2px);
         }
+        /* Custom Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: -400px; /* Hidden off-screen by default */
+            background-color: #FBBD0D;
+            color: #1a1a1a;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast-notification.show {
+            right: 20px; /* Slides in */
+        }
     </style>
 </head>
 <body>
-
+    <!-- Slide-in Notification -->
+    <div id="toast" class="toast-notification">✅ Hotspot Successfully Added!</div>
     <div class="dashboard-container">
         <div class="header">
             <h1>📍 ADD NEW HOTSPOT</h1>
@@ -155,39 +179,49 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // 1. INITIALIZE SUPABASE (Paste your keys here!)
+        // 1. INITIALIZE SUPABASE (Make sure to paste your real keys here!)
         const supabaseUrl = 'YOUR_PROJECT_URL_HERE'; 
-        const supabaseKey = 'YOUR_PUBLISHABLE_KEY_HERE'; 
+        const supabaseKey = 'sb_publishable_2UoSLpca258Kf-N-MqEUzw_sABvTJsQ'; 
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. SECURITY CHECK: Kick out anyone who isn't logged in
+        // 2. SECURITY CHECK
         async function checkAuth() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) {
-                alert("Unauthorized! Redirecting to login.");
-                window.location.href = "admin.html";
+                window.location.replace("admin.html");
             }
         }
-        checkAuth(); // Run check immediately on page load
+        checkAuth();
 
-        // 3. LOGOUT LOGIC
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            window.location.href = "admin.html";
+        // 3. LOGOUT LOGIC (Fixed to force redirect)
+        document.getElementById('logout-btn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('logout-btn');
+            btn.innerText = "WAIT...";
+            btn.style.pointerEvents = "none";
+            
+            try {
+                await supabaseClient.auth.signOut();
+            } catch (err) {
+                console.error("Logout error:", err);
+            }
+            
+            // Force the browser back to the login page and clear history
+            window.location.replace("admin.html");
         });
 
-        // 4. SAVE NEW HOTSPOT LOGIC
+        // 4. SAVE NEW HOTSPOT & SHOW NOTIFICATION
         const form = document.getElementById('hotspot-form');
         const saveBtn = document.getElementById('save-btn');
+        const toast = document.getElementById('toast');
 
         form.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Prevent page refresh
+            e.preventDefault();
 
             const originalText = saveBtn.innerText;
             saveBtn.innerText = "SAVING...";
             saveBtn.style.pointerEvents = "none";
 
-            // Gather the data from the form
             const hotspotData = {
                 title: document.getElementById('title').value,
                 position: document.getElementById('position').value,
@@ -196,17 +230,24 @@
                 target: document.getElementById('target').value
             };
 
-            // Push it to your 'hotspots' table in Supabase
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('hotspots')
                 .insert([hotspotData]);
 
             if (error) {
                 alert("Error saving hotspot: " + error.message);
             } else {
-                alert("Hotspot saved successfully!");
-                form.reset(); // Clear the form
-                document.getElementById('normal').value = "0 1 0"; // Reset default
+                // Trigger the sleek toast notification instead of a standard alert
+                toast.classList.add('show');
+                
+                // Hide it automatically after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+
+                // Reset the form
+                form.reset(); 
+                document.getElementById('normal').value = "0 1 0";
             }
 
             saveBtn.innerText = originalText;
