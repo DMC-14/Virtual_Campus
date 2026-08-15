@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - SUNN Virtual Campus</title>
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            width: 100vw; height: 100vh; height: 100dvh;
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
+        }
+
+        .login-card {
+            background: #ffffff;
+            width: 90%; max-width: 400px; padding: 40px 30px;
+            border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 24px;
+        }
+
+        .login-header { text-align: center; }
+        .login-header h1 {
+            font-family: 'League Spartan', sans-serif; font-size: 24px;
+            color: #111; letter-spacing: 1px; margin-bottom: 8px;
+        }
+        .login-header p {
+            font-size: 13px; color: #FBBD0D; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 12px; }
+        .sunn-input {
+            width: 100%; padding: 16px; border-radius: 12px;
+            border: 1px solid #cfd8dc; background: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #1a1a1a; outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .sunn-input:focus { border-color: #FBBD0D; background: #ffffff; }
+
+        .submit-btn {
+            width: 100%; background-color: #111; color: #FBBD0D;
+            border: none; border-radius: 12px; cursor: pointer;
+            font-family: 'League Spartan', sans-serif; font-weight: 800;
+            font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 18px; transition: all 0.2s ease; margin-top: 8px;
+        }
+        .submit-btn:hover { background-color: #222; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        .submit-btn:active { transform: translateY(0); }
+
+        .back-link {
+            text-align: center; font-size: 13px; color: #888;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h1>SUNN VIRTUAL CAMPUS</h1>
+            <p>System Administrator Portal</p>
+        </div>
+
+        <div class="input-group">
+            <input type="email" class="sunn-input" id="email" placeholder="Admin Email Address" required>
+            <input type="password" class="sunn-input" id="password" placeholder="Password" required>
+        </div>
+
+        <button class="submit-btn" id="login-submit">AUTHORIZE ACCESS</button>
+        
+        <a href="index.html" class="back-link">← Return to Public Map</a>
+    </div>
+
+    <!-- Import Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // 1. INITIALIZE SUPABASE
+        const { createClient } = supabase;
+        
+        // PASTE YOUR KEYS HERE!
+        const supabaseUrl = 'YOUR_PROJECT_URL_HERE'; 
+        const supabaseKey = 'YOUR_PUBLISHABLE_KEY_HERE'; 
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        const submitBtn = document.getElementById('login-submit');
+
+        submitBtn.addEventListener('click', async () => {
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            
+            if (!emailInput || !passwordInput) {
+                alert("Please enter your admin credentials.");
+                return;
+            }
+
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = "VERIFYING...";
+            submitBtn.style.pointerEvents = "none";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: emailInput,
+                password: passwordInput,
+            });
+
+            if (error) {
+                alert("Access Denied: " + error.message);
+                submitBtn.innerText = originalText;
+                submitBtn.style.pointerEvents = "auto";
+            } else {
+                // Login Successful! Redirect to the Dashboard we will build next.
+                window.location.href = "dashboard.html"; 
+            }
+        });
+    </script>
+</body>
+</html>
