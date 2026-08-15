@@ -519,6 +519,24 @@
         // Trigger data fetch on page load
         loadLiveHotspots();
 
+        // 3. LISTEN FOR REAL-TIME DATABASE CHANGES (The Magic Auto-Update)
+        supabaseClient
+            .channel('custom-all-channel')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'hotspots' },
+                (payload) => {
+                    console.log('Database changed! Auto-updating map...', payload);
+                    
+                    // Delete all the old pins off the 3D model
+                    document.querySelectorAll('.sunn-hotspot').forEach(pin => pin.remove());
+                    
+                    // Fetch and draw the brand new updated pins
+                    loadLiveHotspots();
+                }
+            )
+            .subscribe();
+
         // --- Custom Dropdown Logic ---
         const campusContainer = document.getElementById('campusDropdownContainer');
         const campusTrigger = document.getElementById('campusTrigger');
