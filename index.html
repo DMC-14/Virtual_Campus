@@ -282,6 +282,92 @@
         #enter-btn:hover { background: #E0A80B; transform: translateY(-2px); }
         .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
+        /* --- HOTSPOT INFO CARD STYLING --- */
+        #hotspot-info-card {
+            position: fixed;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 45;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #e0e0e0;
+            
+            /* Default Hidden State */
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #hotspot-info-card.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .card-header {
+            background: #FBBD0D;
+            padding: 14px 16px;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-height: 40vh;
+            overflow-y: auto;
+        }
+
+        .card-body h3 {
+            font-family: 'League Spartan', sans-serif;
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            color: #888;
+            letter-spacing: 1.5px;
+        }
+
+        .card-body p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        #close-card-btn {
+            background: rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        #close-card-btn:hover { background: rgba(0,0,0,0.2); }
+
+        /* PC Layout (Desktop) - Slides in from the right */
+        @media (min-width: 769px) {
+            #hotspot-info-card {
+                top: 90px;
+                right: 24px;
+                width: 340px;
+                transform: translateX(30px);
+            }
+            #hotspot-info-card.active { transform: translateX(0); }
+        }
+
         /* --- FIGMA MOBILE RESPONSIVE LAYOUT --- */
         @media (max-width: 768px) {
             .campus-title { display: none; } 
@@ -322,6 +408,15 @@
                 background-color: #d1d5db; 
             }
             #info-panel { padding-top: 100px; } 
+
+            /* Mobile Layout for Info Card - Slides down from under the header */
+            #hotspot-info-card {
+                top: 85px; 
+                left: 50%;
+                width: 92%;
+                transform: translate(-50%, -20px); 
+            }
+            #hotspot-info-card.active { transform: translate(-50%, 0); }
         }
     </style>
 </head>
@@ -395,6 +490,18 @@
         </div>
     </div>
 
+    <!-- DYNAMIC HOTSPOT INFO CARD -->
+    <div id="hotspot-info-card">
+        <div class="card-header">
+            <span id="card-title">📍 Location Title</span>
+            <button id="close-card-btn">✖</button>
+        </div>
+        <div class="card-body">
+            <h3>INFORMATION</h3>
+            <p id="card-description">Description goes here...</p>
+        </div>
+    </div>
+
     <!-- MAIN 3D VIEWER -->
     <model-viewer 
         id="buildingViewer"
@@ -448,8 +555,8 @@
                     <button class="dest-item" data-value="to_ict_office">ICT OFFICE</button>
                     <button class="dest-item" data-value="to_EMC">EMC OFFICE</button>
                     <button class="dest-item" data-value="to_ppao_office">PPAO OFFICE</button>
-                    <button class="dest-item" data-value="to_registrar">REGISTRAR OFFICE</button>
-                    <button class="dest-item" data-value="to_clinic">CLINIC</button>
+                    <button class="dest-item" data-value="to_registrar">SAS OFFICE</button>
+                    <button class="dest-item" data-value="to_clinic">CASO OFFICE</button>
                     <button class="dest-item" data-value="none">BIOLOGY OFFICE</button>
                     <button class="dest-item" data-value="none">TNF OFFICE</button>
                 </div>
@@ -481,6 +588,15 @@
         const menuBtn = document.getElementById('menu-btn');
         const infoBtn = document.getElementById('infoBtn');
         const infoPanel = document.getElementById('info-panel');
+        
+        // References for the new Info Card
+        const infoCard = document.getElementById('hotspot-info-card');
+        const cardTitle = document.getElementById('card-title');
+        const cardDesc = document.getElementById('card-description');
+        
+        document.getElementById('close-card-btn').addEventListener('click', () => {
+            infoCard.classList.remove('active');
+        });
 
         let hotspotsVisible = false;
 
@@ -502,6 +618,9 @@
                 btn.dataset.normal = spot.normal || "0 1 0";
                 btn.dataset.orbit = spot.orbit;
                 btn.dataset.target = spot.target;
+                
+                // Set the description data (fallback to default message if empty)
+                btn.dataset.description = spot.description || "No information currently available for this facility.";
                 btn.innerText = spot.title;
 
                 // Sync with current toggle state
@@ -510,11 +629,18 @@
                     btn.style.pointerEvents = 'all';
                 }
 
-                // Add camera click logic
+                // Add camera click logic AND Info Card Trigger
                 btn.addEventListener('click', (event) => {
                     event.stopPropagation();
+                    
+                    // Move the Camera
                     viewer.cameraOrbit = getResponsiveOrbit(btn.dataset.orbit);
                     viewer.cameraTarget = btn.dataset.target;
+                    
+                    // Populate and animate the Info Card
+                    cardTitle.innerText = spot.title;
+                    cardDesc.innerText = btn.dataset.description;
+                    infoCard.classList.add('active');
                 });
 
                 viewer.appendChild(btn);
@@ -760,6 +886,9 @@
             if (event.shiftKey) return;
             if (event.target.classList.contains('sunn-hotspot')) return;
 
+            // NEW: Close the info card if they click the 3D model background
+            infoCard.classList.remove('active');
+
             const moveX = Math.abs(event.clientX - startX);
             const moveY = Math.abs(event.clientY - startY);
             if (moveX > 5 || moveY > 5) return;
@@ -793,6 +922,9 @@
                 hotspot.style.pointerEvents = 'none';
             });
             hotspotBtn.innerText = "Show Hotspots";
+            
+            // NEW: Make sure the info card goes away on reset!
+            infoCard.classList.remove('active');
         });
         
         hotspotBtn.addEventListener('click', () => {
