@@ -372,26 +372,92 @@
         @media (max-width: 768px) {
             .campus-title { display: none; } 
             
-            /* ... (keep your other mobile CSS up here) ... */
+            .top-header { 
+                top: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 92%; 
+                height: 60px;
+                border-radius: 16px;
+                padding: 0 12px;
+                justify-content: flex-start;
+                gap: 12px;
+            }
+
+            .bottom-controls { 
+                width: 92%; 
+                bottom: 16px; 
+                padding: 16px;
+                border-radius: 20px;
+            }
+            .mobile-panel-title { display: block; }
             
+            .bottom-action-row .sunn-btn { 
+                flex: 1; 
+                padding: 16px 8px; 
+                font-size: 12px; 
+                border-radius: 12px; 
+                min-height: 48px; 
+            }
+            .dropdown-trigger {
+                min-height: 48px;
+            }
+            .icon-circle-btn { 
+                width: 48px; 
+                height: 48px; 
+                background-color: #d1d5db; 
+            }
             #info-panel { padding-top: 100px; } 
 
             /* Mobile Layout for Info Card - Slides UP from above bottom controls */
             #hotspot-info-card {
-                top: auto; /* Removes the top anchor */
-                bottom: 190px; /* Sits cleanly above your bottom navigation menu */
+                top: auto; 
+                bottom: 190px; 
                 left: 50%;
                 width: 92%;
-                transform: translate(-50%, 30px); /* Starts slightly lower for animation */
+                transform: translate(-50%, 30px); 
             }
             
             #hotspot-info-card.active { 
                 transform: translate(-50%, 0); 
             }
 
-            /* Prevents long text from making the card too tall on small screens */
+            /* --- NEW: MOBILE TAP-TO-EXPAND DRAWER --- */
+            #hotspot-info-card .card-header {
+                cursor: pointer;
+            }
+            
+            /* Adds a little visual indicator that it can be tapped */
+            #card-title::after {
+                content: ' ▲';
+                font-size: 10px;
+                opacity: 0.6;
+                display: inline-block;
+                margin-left: 8px;
+                transition: transform 0.3s;
+            }
+            
+            /* Flips the arrow when open */
+            #hotspot-info-card.expanded #card-title::after {
+                transform: rotate(180deg);
+            }
+
+            /* 1. START COLLAPSED: Hides the body by default on mobile */
             #hotspot-info-card .card-body {
-                max-height: 32vh; 
+                max-height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                opacity: 0;
+                overflow: hidden;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            /* 2. EXPANDED STATE: Reveals the body when tapped */
+            #hotspot-info-card.expanded .card-body {
+                max-height: 35vh; 
+                padding: 16px;
+                opacity: 1;
+                overflow-y: auto;
             }
         }
     </style>
@@ -589,16 +655,29 @@
         const infoBtn = document.getElementById('infoBtn');
         const infoPanel = document.getElementById('info-panel');
         
-        // References for the new Info Card
+       // References for the new Info Card
         const infoCard = document.getElementById('hotspot-info-card');
         const cardTitle = document.getElementById('card-title');
         const cardDesc = document.getElementById('card-description');
+        const cardHeader = document.querySelector('.card-header');
         
         document.getElementById('close-card-btn').addEventListener('click', () => {
             infoCard.classList.remove('active');
         });
 
         let hotspotsVisible = false;
+
+        // 1. Close Button (Resets the card completely)
+        document.getElementById('close-card-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); // Stops the tap from accidentally opening the card
+            infoCard.classList.remove('active');
+            infoCard.classList.remove('expanded');
+        });
+
+        // 2. Expand/Collapse Toggle when header is tapped
+        cardHeader.addEventListener('click', () => {
+            infoCard.classList.toggle('expanded');
+        });
 
         // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
         async function loadLiveHotspots() {
@@ -640,6 +719,7 @@
                     // Populate and animate the Info Card
                     cardTitle.innerText = spot.title;
                     cardDesc.innerText = btn.dataset.description;
+                    infoCard.classList.remove('expanded'); // <-- ADD THIS LINE! Forces it to start small on a new click
                     infoCard.classList.add('active');
                 });
 
