@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SUNN Virtual Campus</title>
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            padding: 40px 20px;
+        }
+
+        .dashboard-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2b2b2b;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'League Spartan', sans-serif;
+            color: #FBBD0D;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid #aaa;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover {
+            background: #ff4757;
+            color: white;
+            border-color: #ff4757;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #FBBD0D;
+        }
+        .help-text {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #FBBD0D;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            padding: 16px;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+        .submit-btn:hover {
+            background-color: #E0A80B;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>📍 ADD NEW HOTSPOT</h1>
+            <button class="logout-btn" id="logout-btn">LOGOUT</button>
+        </div>
+
+        <form id="hotspot-form">
+            <div class="form-group">
+                <label>Hotspot Title</label>
+                <input type="text" id="title" class="form-input" placeholder="e.g. 📍 New Library" required>
+            </div>
+
+            <div class="form-group">
+                <label>Data Position (Where the pin floats)</label>
+                <input type="text" id="position" class="form-input" placeholder="e.g. 5.0m 1m -15.0m" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Data Normal (Usually 0 1 0)</label>
+                <input type="text" id="normal" class="form-input" value="0 1 0" required>
+            </div>
+
+            <div class="form-group">
+                <label>Data Orbit (Camera angle & zoom)</label>
+                <input type="text" id="orbit" class="form-input" placeholder="e.g. 10deg 140deg 5m" required>
+            </div>
+
+            <div class="form-group">
+                <label>Data Target (Where camera focuses)</label>
+                <input type="text" id="target" class="form-input" placeholder="e.g. 5.0m 1m -15.0m" required>
+                <span class="help-text">Usually matches the Data Position.</span>
+            </div>
+
+            <button type="submit" class="submit-btn" id="save-btn">SAVE TO DATABASE</button>
+        </form>
+    </div>
+
+    <!-- Import Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // 1. INITIALIZE SUPABASE (Paste your keys here!)
+        const supabaseUrl = 'YOUR_PROJECT_URL_HERE'; 
+        const supabaseKey = 'YOUR_PUBLISHABLE_KEY_HERE'; 
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 2. SECURITY CHECK: Kick out anyone who isn't logged in
+        async function checkAuth() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                alert("Unauthorized! Redirecting to login.");
+                window.location.href = "admin.html";
+            }
+        }
+        checkAuth(); // Run check immediately on page load
+
+        // 3. LOGOUT LOGIC
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = "admin.html";
+        });
+
+        // 4. SAVE NEW HOTSPOT LOGIC
+        const form = document.getElementById('hotspot-form');
+        const saveBtn = document.getElementById('save-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent page refresh
+
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "SAVING...";
+            saveBtn.style.pointerEvents = "none";
+
+            // Gather the data from the form
+            const hotspotData = {
+                title: document.getElementById('title').value,
+                position: document.getElementById('position').value,
+                normal: document.getElementById('normal').value,
+                orbit: document.getElementById('orbit').value,
+                target: document.getElementById('target').value
+            };
+
+            // Push it to your 'hotspots' table in Supabase
+            const { data, error } = await supabaseClient
+                .from('hotspots')
+                .insert([hotspotData]);
+
+            if (error) {
+                alert("Error saving hotspot: " + error.message);
+            } else {
+                alert("Hotspot saved successfully!");
+                form.reset(); // Clear the form
+                document.getElementById('normal').value = "0 1 0"; // Reset default
+            }
+
+            saveBtn.innerText = originalText;
+            saveBtn.style.pointerEvents = "auto";
+        });
+    </script>
+</body>
+</html>
