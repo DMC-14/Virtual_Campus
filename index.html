@@ -536,6 +536,24 @@
                     <button class="dest-item" data-value="none">BIOLOGY OFFICE</button>
                     <button class="dest-item" data-value="none">TNF OFFICE</button>
                 </div>
+
+                <!-- 2. MAIN CAMPUS DESTINATIONS (Hidden by default) -->
+                <div class="destination-grid" id="grid-main" style="display: none;">
+                    <button class="dest-item" data-value="none">MAIN DEST 1</button>
+                    <button class="dest-item" data-value="none">MAIN DEST 2</button>
+                </div>
+
+                <!-- 3. ESCALANTE CAMPUS DESTINATIONS (Hidden by default) -->
+                <div class="destination-grid" id="grid-escalante" style="display: none;">
+                    <button class="dest-item" data-value="none">ESCALANTE DEST 1</button>
+                    <button class="dest-item" data-value="none">ESCALANTE DEST 2</button>
+                </div>
+
+                <!-- 4. LAGA-AN CAMPUS DESTINATIONS (Hidden by default) -->
+                <div class="destination-grid" id="grid-lagaan" style="display: none;">
+                    <button class="dest-item" data-value="none">LAGA-AN DEST 1</button>
+                    <button class="dest-item" data-value="none">LAGA-AN DEST 2</button>
+                </div>
             </div>
         </div>
 
@@ -688,17 +706,49 @@
         campusItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 const val = e.target.getAttribute('data-value');
-                const text = e.target.innerText;
+                const text = e.target.innerText.trim();
                 
-                campusTriggerText.innerText = text;
+                // 1. Close the dropdown first
                 campusContainer.classList.remove('open');
                 
+                // 2. If the user clicks the campus they are already on, do nothing!
+                if (viewer.src === val || viewer.src.includes(val)) {
+                    return; 
+                }
+                
+                // 3. Start loading the new campus
+                campusTriggerText.innerText = text;
                 loadingOverlay.classList.add('active'); 
                 loadPercentage.innerText = "0%";
                 viewer.src = val;
                 
+                // 4. Force the UI to reset so data doesn't bleed over
                 currentSelectedRoute = "none";
                 destTriggerText.innerText = "SELECT DESTINATION";
+                
+                hotspotsVisible = false;
+                document.querySelectorAll('.sunn-hotspot').forEach(hotspot => {
+                    hotspot.style.opacity = '0';
+                    hotspot.style.pointerEvents = 'none';
+                });
+                hotspotBtn.innerText = "Show Hotspots";
+                infoCard.classList.remove('active');
+
+                // 5. Swap the Destination Grids dynamically
+                document.getElementById('grid-old-sagay').style.display = 'none';
+                document.getElementById('grid-main').style.display = 'none';
+                document.getElementById('grid-escalante').style.display = 'none';
+                document.getElementById('grid-lagaan').style.display = 'none';
+                
+                if (text === "OLD SAGAY CAMPUS") {
+                    document.getElementById('grid-old-sagay').style.display = 'grid';
+                } else if (text === "MAIN CAMPUS") {
+                    document.getElementById('grid-main').style.display = 'grid';
+                } else if (text === "ESCALANTE CAMPUS") {
+                    document.getElementById('grid-escalante').style.display = 'grid';
+                } else if (text === "LAGA-AN CAMPUS") {
+                    document.getElementById('grid-lagaan').style.display = 'grid';
+                }
             });
         });
 
