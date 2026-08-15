@@ -326,7 +326,7 @@
                 item.className = 'hotspot-item';
                 
                 // Safe serialization for the edit button
-                const spotData = encodeURIComponent(JSON.stringify(spot));
+                const spotData = encodeURIComponent(JSON.stringify(spot)).replace(/'/g, "%27");
 
                 item.innerHTML = `
                     <div class="hotspot-info">
