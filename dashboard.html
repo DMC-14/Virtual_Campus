@@ -194,6 +194,13 @@
         }
         checkAuth();
 
+        // Catch browser Back/Forward cache restores
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                checkAuth();
+            }
+        });
+
         // 3. LOGOUT LOGIC (Fixed to force redirect)
         document.getElementById('logout-btn').addEventListener('click', async (e) => {
             e.preventDefault();

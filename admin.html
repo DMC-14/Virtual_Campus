@@ -95,6 +95,15 @@
 
         const submitBtn = document.getElementById('login-submit');
 
+        // AUTO-FORWARD IF ALREADY LOGGED IN
+        async function checkExistingSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.replace("dashboard.html");
+            }
+        }
+        checkExistingSession();
+
         submitBtn.addEventListener('click', async () => {
             const emailInput = document.getElementById('email').value;
             const passwordInput = document.getElementById('password').value;
