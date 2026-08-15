@@ -550,6 +550,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
+        // --- 0. AUTO-CLEAN ADDRESS BAR ---
+        if (window.location.href.indexOf("index.html") > -1) {
+            const cleanUrl = window.location.href.replace("index.html", "");
+            window.history.replaceState(null, null, cleanUrl);
+        }
         // --- 1. INITIALIZE SUPABASE ---
         const supabaseUrl = 'https://kmqivcvkwggjztwuxnbz.supabase.co'; 
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcWl2Y3Zrd2dnanp0d3V4bmJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NjcwNDYsImV4cCI6MjEwMjM0MzA0Nn0.Wt7HBa4tvmY9vnlLcVmvG8KW7GXxs2TA9MDk5qD5caM'; 
