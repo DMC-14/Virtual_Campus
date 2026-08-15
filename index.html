@@ -288,7 +288,7 @@
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 45;
+            z-index: 999;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             display: flex;
@@ -711,6 +711,10 @@
                 // Add camera click logic AND Info Card Trigger
                 btn.addEventListener('click', (event) => {
                     event.stopPropagation();
+
+                    // NEW: Automatically close any open menus so they don't block the screen
+                    document.getElementById('campusDropdownContainer').classList.remove('open');
+                    document.getElementById('destDropdownContainer').classList.remove('open');
                     
                     // Move the Camera
                     viewer.cameraOrbit = getResponsiveOrbit(btn.dataset.orbit);
