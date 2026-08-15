@@ -82,7 +82,7 @@
             font-family: 'League Spartan', 'Segoe UI', sans-serif;
             font-weight: 700;
             font-size: 13px;
-            padding: 16px 14px; /* Increased vertical padding for better touch */
+            padding: 16px 14px;
             border-radius: 8px;
             border: 2px solid #FBBD0D;
             background-color: #f8f9fa;
@@ -110,7 +110,6 @@
             width: 100%;
             max-height: 0;
             opacity: 0;
-            /* BUG FIX: visibility and pointer-events prevent ghost clicks when closed */
             visibility: hidden; 
             pointer-events: none;
             overflow: hidden;
@@ -156,17 +155,15 @@
             background: transparent;
             border: none;
             border-bottom: 1px solid #f0f0f0;
-            /* BUG FIX: Increased padding guarantees a large, easy-to-hit thumb target */
             padding: 14px 8px; 
             font-family: 'League Spartan', sans-serif;
             font-weight: 700;
-            font-size: 12px; /* Increased legibility */
+            font-size: 12px; 
             color: #444;
             text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        /* Mobile Touch Feedback */
         .dest-item:hover, .dest-item:active {
             color: #FBBD0D;
             border-bottom-color: #FBBD0D;
@@ -309,7 +306,6 @@
             }
             .mobile-panel-title { display: block; }
             
-            /* BUG FIX: Enforce minimum heights for thumb tapping */
             .bottom-action-row .sunn-btn { 
                 flex: 1; 
                 padding: 16px 8px; 
@@ -422,18 +418,7 @@
         tone-mapping="aces"
         alt="Interactive 3D view of the campus">
 
-        <button class="sunn-hotspot" slot="hotspot-ccis" data-position="5.0m 1m -15.0m" data-normal="0 1 0" data-orbit="10deg 140deg 5m" data-target="5.0m 1m -15.0m">📍 CCIS Office</button>
-        <button class="sunn-hotspot" slot="hotspot-canteen" data-position="-15.0m 5.0m 13.5m" data-normal="0 1 0" data-orbit="130deg 70deg 60m" data-target="-15.0m 5.0m 13.5m">📍 Campus Canteen</button>
-        <button class="sunn-hotspot" slot="hotspot-clinic" data-position="-41.0m 1.15m 16.24m" data-normal="0 1 0" data-orbit="160deg 140deg 5m" data-target="-41.0m 1.15m 16.24m">📍 Campus Clinic</button>
-        <button class="sunn-hotspot" slot="hotspot-library" data-position="-11.0m 1.50m -14.68m" data-normal="0 1 0" data-orbit="35deg 140deg 5m" data-target="-11.0m 1.50m -14.68m">📍 Campus Library</button>
-        <button class="sunn-hotspot" slot="hotspot-function-hall" data-position="16.0m 1.0m -15.70m" data-normal="0 1 0" data-orbit="-30deg 100deg 5m" data-target="16.0m 1.0m -15.70m">📍 Function Hall</button>
-        <button class="sunn-hotspot" slot="hotspot-repair-room" data-position="-5.37m 1.0m -17.70m" data-normal="0 1 0" data-orbit="0deg 140deg 5m" data-target="-5.37m 1.0m -17.70m">📍 Repair Room</button>
-        <button class="sunn-hotspot" slot="hotspot-cals-office" data-position="-55.79m 3.15m 15.23m" data-normal="0 1 0" data-orbit="90deg 45deg 55m" data-target="-55.79m 3.15m 15.23m">📍 CALS Office</button>
-        <button class="sunn-hotspot" slot="hotspot-registrar-office" data-position="20.0m 1.0m -15.0m" data-normal="0 1 0" data-orbit="90deg 45deg 55m" data-target="20.0m 1.0m -15.0m">📍 Registrar's Office</button>
-        <button class="sunn-hotspot" slot="hotspot-ict-office" data-position="10.0m 1.0m -20.0m" data-normal="0 1 0" data-orbit="90deg 45deg 55m" data-target="10.0m 1.0m -20.0m">📍 ICT Office</button>
-        <button class="sunn-hotspot" slot="hotspot-emc-department" data-position="30.7m 5.5m -28.6m" data-normal="0 1 0" data-orbit="180deg 145deg 55m" data-target="30.7m 5.5m -28.6m">📍 EMC Office</button>
-        <button class="sunn-hotspot" slot="hotspot-cfins-office" data-position="60.0m 4.0m -11.7m" data-normal="0 1 0" data-orbit="90deg 45deg 55m" data-target="60.0m 4.0m -11.7m">📍 CFINS Office</button>
-        <button class="sunn-hotspot" slot="hotspot-ppao-office" data-position="40.0m 3.0m -25.0m" data-normal="0 1 0" data-orbit="90deg 45deg 55m" data-target="40.0m 3.0m -25.0m">📍 Ppao Office</button>
+        <!-- DYNAMIC HOTSPOTS WILL LOAD HERE FROM SUPABASE -->
 
     </model-viewer>
 
@@ -473,7 +458,15 @@
 
     </div>
 
+    <!-- Import Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
+        // --- 1. INITIALIZE SUPABASE ---
+        const supabaseUrl = 'https://kmqivcvkwggjztwuxnbz.supabase.co'; 
+        const supabaseKey = 'sb_publishable_2UoSLpca2SRKf-N-MqEUzw_sAbV1JsQ'; 
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
         const viewer = document.getElementById('buildingViewer');
         const resetBtn = document.getElementById('resetCam');
         const hotspotBtn = document.getElementById('hotspotBtn');
@@ -484,7 +477,47 @@
         const infoBtn = document.getElementById('infoBtn');
         const infoPanel = document.getElementById('info-panel');
 
-        const allHotspots = document.querySelectorAll('.sunn-hotspot');
+        let hotspotsVisible = false;
+
+        // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
+        async function loadLiveHotspots() {
+            const { data: hotspots, error } = await supabaseClient.from('hotspots').select('*');
+            
+            if (error) {
+                console.error("Failed to load hotspots:", error);
+                return;
+            }
+
+            hotspots.forEach((spot, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'sunn-hotspot';
+                btn.slot = `hotspot-dynamic-${index}`;
+                
+                btn.dataset.position = spot.position;
+                btn.dataset.normal = spot.normal || "0 1 0";
+                btn.dataset.orbit = spot.orbit;
+                btn.dataset.target = spot.target;
+                btn.innerText = spot.title;
+
+                // Sync with current toggle state
+                if (hotspotsVisible) {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'all';
+                }
+
+                // Add camera click logic
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    viewer.cameraOrbit = getResponsiveOrbit(btn.dataset.orbit);
+                    viewer.cameraTarget = btn.dataset.target;
+                });
+
+                viewer.appendChild(btn);
+            });
+        }
+
+        // Trigger data fetch on page load
+        loadLiveHotspots();
 
         // --- Custom Dropdown Logic ---
         const campusContainer = document.getElementById('campusDropdownContainer');
@@ -589,18 +622,6 @@
             "to_repair_room":    { target: "4.29m 3.0m -23.69m",   orbit: "90deg 45deg 55m" }
         };
 
-        allHotspots.forEach(hotspot => {
-            hotspot.addEventListener('click', (event) => {
-                event.stopPropagation();
-                const clickedButton = event.target;
-                const newOrbit = clickedButton.dataset.orbit;
-                const newTarget = clickedButton.dataset.target;
-
-                viewer.cameraOrbit = getResponsiveOrbit(newOrbit);
-                viewer.cameraTarget = newTarget;
-            });
-        });
-
         document.getElementById('enter-btn').addEventListener('click', () => {
             document.getElementById('title-card').classList.add('hidden');
         });
@@ -670,7 +691,7 @@
             if (currentSelectedRoute !== "none") {
                 
                 hotspotsVisible = false;
-                allHotspots.forEach(hotspot => {
+                document.querySelectorAll('.sunn-hotspot').forEach(hotspot => {
                     hotspot.style.opacity = '0';
                     hotspot.style.pointerEvents = 'none';
                 });
@@ -744,14 +765,12 @@
             setXrayMode(false);
 
             hotspotsVisible = false;
-            allHotspots.forEach(hotspot => {
+            document.querySelectorAll('.sunn-hotspot').forEach(hotspot => {
                 hotspot.style.opacity = '0';
                 hotspot.style.pointerEvents = 'none';
             });
             hotspotBtn.innerText = "Show Hotspots";
         });
-
-        let hotspotsVisible = false; 
         
         hotspotBtn.addEventListener('click', () => {
             hotspotsVisible = !hotspotsVisible;
@@ -763,7 +782,7 @@
                 destTriggerText.innerText = "SELECT DESTINATION";
             }
             
-            allHotspots.forEach(hotspot => {
+            document.querySelectorAll('.sunn-hotspot').forEach(hotspot => {
                 if (hotspotsVisible) {
                     hotspot.style.opacity = '1';
                     hotspot.style.pointerEvents = 'all';
