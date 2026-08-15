@@ -5,267 +5,455 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - SUNN Virtual Campus</title>
     
-    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
     
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
         body {
+            margin: 0;
+            padding: 20px;
             background-color: #1a1a1a;
+            color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #fff;
-            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
-        .dashboard-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #2b2b2b;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        .dashboard-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
         }
 
-        .header {
+        /* --- PANELS --- */
+        .panel {
+            background-color: #2b2b2b;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
         }
 
-        h1 {
+        h2 {
             font-family: 'League Spartan', sans-serif;
             color: #FBBD0D;
+            margin: 0;
             font-size: 24px;
             letter-spacing: 1px;
-        }
-
-        .logout-btn {
-            background: transparent;
-            color: #aaa;
-            border: 1px solid #aaa;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        .logout-btn:hover {
-            background: #ff4757;
-            color: white;
-            border-color: #ff4757;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #ccc;
-            text-transform: uppercase;
-        }
-        .form-input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background: #1a1a1a;
-            color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-            font-size: 14px;
-            outline: none;
-        }
-        .form-input:focus {
-            border-color: #FBBD0D;
-        }
-        .help-text {
-            font-size: 11px;
-            color: #888;
-            margin-top: 4px;
-            display: block;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background-color: #FBBD0D;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'League Spartan', sans-serif;
-            font-weight: 800;
-            font-size: 16px;
-            padding: 16px;
-            margin-top: 10px;
-            transition: all 0.2s ease;
-        }
-        .submit-btn:hover {
-            background-color: #E0A80B;
-            transform: translateY(-2px);
-        }
-        /* Custom Toast Notification */
-        .toast-notification {
-            position: fixed;
-            top: 20px;
-            right: -400px; /* Hidden off-screen by default */
-            background-color: #FBBD0D;
-            color: #1a1a1a;
-            padding: 16px 24px;
-            border-radius: 8px;
-            font-family: 'League Spartan', sans-serif;
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1000;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .toast-notification.show {
-            right: 20px; /* Slides in */
+
+        /* --- FORM ELEMENTS --- */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            font-family: 'League Spartan', sans-serif;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: #1f1f1f;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #FBBD0D;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-primary {
+            background-color: #FBBD0D;
+            color: #1a1a1a;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-primary:hover { background-color: #e0a80b; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #aaa;
+            color: #aaa;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: 'League Spartan', sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { background: #333; color: #fff; border-color: #fff; }
+
+        .btn-small { padding: 6px 12px; font-size: 11px; margin-left: 6px; }
+        .btn-edit { border-color: #4CAF50; color: #4CAF50; }
+        .btn-edit:hover { background: #4CAF50; color: white; }
+        .btn-delete { border-color: #F44336; color: #F44336; }
+        .btn-delete:hover { background: #F44336; color: white; }
+        .btn-cancel { border-color: #aaa; color: #aaa; margin-top: 10px; width: 100%; display: none; }
+
+        /* --- LIST STYLES --- */
+        .list-container {
+            overflow-y: auto;
+            padding-right: 10px;
+            flex-grow: 1;
+        }
+        
+        /* Scrollbar styling */
+        .list-container::-webkit-scrollbar { width: 6px; }
+        .list-container::-webkit-scrollbar-track { background: #1f1f1f; border-radius: 4px; }
+        .list-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+
+        .hotspot-item {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hotspot-info h4 { margin: 0 0 4px 0; color: #FBBD0D; font-family: 'League Spartan', sans-serif; font-size: 16px; }
+        .hotspot-info p { margin: 0; color: #888; font-size: 12px; }
+
+        .action-buttons { display: flex; gap: 8px; }
+
+        /* --- TOAST NOTIFICATION --- */
+        #toast {
+            position: fixed;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: bottom 0.4s ease;
+            z-index: 1000;
+        }
+        #toast.show { bottom: 30px; }
+
+        @media (max-width: 900px) {
+            .dashboard-wrapper { grid-template-columns: 1fr; }
+            .panel { max-height: none; }
         }
     </style>
+
+    <!-- --- AUTO-CLEAN SCRIPT --- -->
+    <script>
+        if (window.location.href.indexOf(".html") > -1) {
+            const cleanUrl = window.location.href.replace(".html", "");
+            window.history.replaceState(null, null, cleanUrl);
+        }
+    </script>
 </head>
 <body>
-    <!-- Slide-in Notification -->
-    <div id="toast" class="toast-notification">✅ Hotspot Successfully Added!</div>
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>📍 ADD NEW HOTSPOT</h1>
-            <button class="logout-btn" id="logout-btn">LOGOUT</button>
+
+    <div id="toast">✅ Action Successful!</div>
+
+    <div class="dashboard-wrapper">
+        
+        <!-- LEFT PANEL: THE FORM -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 id="form-title">📍 ADD NEW HOTSPOT</h2>
+                <button class="btn-outline" id="logoutBtn">LOGOUT</button>
+            </div>
+
+            <div class="form-container">
+                <input type="hidden" id="editId" value="">
+
+                <div class="form-group">
+                    <label>HOTSPOT TITLE</label>
+                    <input type="text" id="title" placeholder="e.g. 📍 New Library">
+                </div>
+
+                <div class="form-group">
+                    <label>DESCRIPTION (INFO CARD TEXT)</label>
+                    <textarea id="description" placeholder="Enter the description that will appear on the info card..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>DATA POSITION (WHERE THE PIN FLOATS)</label>
+                    <input type="text" id="position" placeholder="e.g. 5.0m 1m -15.0m">
+                </div>
+
+                <div class="form-group">
+                    <label>DATA NORMAL (USUALLY 0 1 0)</label>
+                    <input type="text" id="normal" value="0 1 0">
+                </div>
+
+                <div class="form-group">
+                    <label>DATA ORBIT (CAMERA ANGLE & ZOOM)</label>
+                    <input type="text" id="orbit" placeholder="e.g. 10deg 140deg 5m">
+                </div>
+
+                <div class="form-group">
+                    <label>DATA TARGET (WHERE CAMERA FOCUSES)</label>
+                    <input type="text" id="target" placeholder="e.g. 5.0m 1m -15.0m">
+                </div>
+
+                <button class="btn-primary" id="saveBtn">SAVE TO DATABASE</button>
+                <button class="btn-outline btn-cancel" id="cancelBtn">CANCEL EDIT</button>
+            </div>
         </div>
 
-        <form id="hotspot-form">
-            <div class="form-group">
-                <label>Hotspot Title</label>
-                <input type="text" id="title" class="form-input" placeholder="e.g. 📍 New Library" required>
-            </div>
-
-            <div class="form-group">
-                <label>Data Position (Where the pin floats)</label>
-                <input type="text" id="position" class="form-input" placeholder="e.g. 5.0m 1m -15.0m" required>
+        <!-- RIGHT PANEL: THE LIST (READ, UPDATE, DELETE) -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>DATABASE HOTSPOTS</h2>
+                <button class="btn-outline" onclick="loadHotspots()">REFRESH ↻</button>
             </div>
             
-            <div class="form-group">
-                <label>Data Normal (Usually 0 1 0)</label>
-                <input type="text" id="normal" class="form-input" value="0 1 0" required>
+            <div class="list-container" id="hotspotList">
+                <p style="color: #888; text-align: center; margin-top: 40px;">Loading database...</p>
+                <!-- Dynamic items will be injected here -->
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>Data Orbit (Camera angle & zoom)</label>
-                <input type="text" id="orbit" class="form-input" placeholder="e.g. 10deg 140deg 5m" required>
-            </div>
-
-            <div class="form-group">
-                <label>Data Target (Where camera focuses)</label>
-                <input type="text" id="target" class="form-input" placeholder="e.g. 5.0m 1m -15.0m" required>
-                <span class="help-text">Usually matches the Data Position.</span>
-            </div>
-
-            <button type="submit" class="submit-btn" id="save-btn">SAVE TO DATABASE</button>
-        </form>
     </div>
 
     <!-- Import Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // --- 0. AUTO-CLEAN .HTML FROM ADDRESS BAR ---
-        if (window.location.href.indexOf(".html") > -1) {
-            const cleanUrl = window.location.href.replace(".html", "");
-            window.history.replaceState(null, null, cleanUrl);
-        }
-        // 1. INITIALIZE SUPABASE (Make sure to paste your real keys here!)
+        // 1. INITIALIZE SUPABASE (Using your live URL and Keys)
         const supabaseUrl = 'https://kmqivcvkwggjztwuxnbz.supabase.co'; 
-        const supabaseKey = 'sb_publishable_2UoSLpca258Kf-N-MqEUzw_sABvTJsQ'; 
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcWl2Y3Zrd2dnanp0d3V4bmJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NjcwNDYsImV4cCI6MjEwMjM0MzA0Nn0.Wt7HBa4tvmY9vnlLcVmvG8KW7GXxs2TA9MDk5qD5caM'; 
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 2. SECURITY CHECK (Using Session storage for GitHub Pages)
+        // UI Elements
+        const toast = document.getElementById('toast');
+        const hotspotList = document.getElementById('hotspotList');
+        const formTitle = document.getElementById('form-title');
+        const editIdInput = document.getElementById('editId');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Form Inputs
+        const inTitle = document.getElementById('title');
+        const inDesc = document.getElementById('description');
+        const inPos = document.getElementById('position');
+        const inNorm = document.getElementById('normal');
+        const inOrbit = document.getElementById('orbit');
+        const inTarget = document.getElementById('target');
+
+        // --- AUTH CHECK ---
         async function checkAuth() {
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
-            if (!session) {
-                console.log("No session found, redirecting to login.");
-                window.location.replace("admin.html");
+            const { data, error } = await supabaseClient.auth.getSession();
+            if (!data.session) {
+                // If not logged in, kick them back to admin login
+                window.location.href = 'admin'; 
+            } else {
+                loadHotspots();
             }
         }
         checkAuth();
 
-        // Catch browser Back/Forward cache restores
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                checkAuth();
-            }
-        });
-
-        // 3. LOGOUT LOGIC (Fixed to force redirect)
-        document.getElementById('logout-btn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('logout-btn');
-            btn.innerText = "WAIT...";
-            btn.style.pointerEvents = "none";
+        // --- READ: LOAD HOTSPOTS FROM DATABASE ---
+        async function loadHotspots() {
+            hotspotList.innerHTML = '<p style="color: #888; text-align: center;">Fetching data...</p>';
             
-            try {
-                await supabaseClient.auth.signOut();
-            } catch (err) {
-                console.error("Logout error:", err);
-            }
+            const { data, error } = await supabaseClient.from('hotspots').select('*').order('created_at', { ascending: false });
             
-            // Force the browser back to the login page and clear history
-            window.location.replace("admin.html");
-        });
+            if (error) {
+                console.error("Error loading hotspots:", error);
+                hotspotList.innerHTML = '<p style="color: #F44336; text-align: center;">Error loading data.</p>';
+                return;
+            }
 
-        // 4. SAVE NEW HOTSPOT & SHOW NOTIFICATION
-        const form = document.getElementById('hotspot-form');
-        const saveBtn = document.getElementById('save-btn');
-        const toast = document.getElementById('toast');
+            if (data.length === 0) {
+                hotspotList.innerHTML = '<p style="color: #888; text-align: center;">No hotspots found in the database.</p>';
+                return;
+            }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            hotspotList.innerHTML = ''; // Clear list
 
-            const originalText = saveBtn.innerText;
+            data.forEach(spot => {
+                const item = document.createElement('div');
+                item.className = 'hotspot-item';
+                
+                // Safe serialization for the edit button
+                const spotData = encodeURIComponent(JSON.stringify(spot));
+
+                item.innerHTML = `
+                    <div class="hotspot-info">
+                        <h4>${spot.title}</h4>
+                        <p>Pos: ${spot.position}</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-outline btn-small btn-edit" onclick="startEdit('${spotData}')">EDIT</button>
+                        <button class="btn-outline btn-small btn-delete" onclick="deleteHotspot('${spot.id}')">DELETE</button>
+                    </div>
+                `;
+                hotspotList.appendChild(item);
+            });
+        }
+
+        // --- CREATE & UPDATE: SAVE BUTTON LOGIC ---
+        saveBtn.addEventListener('click', async () => {
+            // Basic validation
+            if (!inTitle.value || !inPos.value || !inOrbit.value || !inTarget.value) {
+                showToast("Please fill in all required fields!", "#F44336");
+                return;
+            }
+
             saveBtn.innerText = "SAVING...";
-            saveBtn.style.pointerEvents = "none";
+            saveBtn.disabled = true;
 
             const hotspotData = {
-                title: document.getElementById('title').value,
-                position: document.getElementById('position').value,
-                normal: document.getElementById('normal').value,
-                orbit: document.getElementById('orbit').value,
-                target: document.getElementById('target').value
+                title: inTitle.value,
+                description: inDesc.value,
+                position: inPos.value,
+                normal: inNorm.value || "0 1 0",
+                orbit: inOrbit.value,
+                target: inTarget.value
             };
 
-            const { error } = await supabaseClient
-                .from('hotspots')
-                .insert([hotspotData]);
+            const currentId = editIdInput.value;
+            let errorObj = null;
 
-            if (error) {
-                alert("Error saving hotspot: " + error.message);
+            if (currentId) {
+                // UPDATE EXISTING
+                const { error } = await supabaseClient.from('hotspots').update(hotspotData).eq('id', currentId);
+                errorObj = error;
             } else {
-                // Trigger the sleek toast notification instead of a standard alert
-                toast.classList.add('show');
-                
-                // Hide it automatically after 3 seconds
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-
-                // Reset the form
-                form.reset(); 
-                document.getElementById('normal').value = "0 1 0";
+                // CREATE NEW
+                const { error } = await supabaseClient.from('hotspots').insert([hotspotData]);
+                errorObj = error;
             }
 
-            saveBtn.innerText = originalText;
-            saveBtn.style.pointerEvents = "auto";
+            saveBtn.disabled = false;
+
+            if (errorObj) {
+                console.error(errorObj);
+                showToast("Error saving data!", "#F44336");
+                saveBtn.innerText = currentId ? "UPDATE HOTSPOT" : "SAVE TO DATABASE";
+            } else {
+                showToast(currentId ? "✅ Hotspot Updated!" : "✅ Hotspot Created!", "#4CAF50");
+                resetForm();
+                loadHotspots(); // Refresh the list
+            }
         });
+
+        // --- PREPARE FOR UPDATE: FILL FORM ---
+        window.startEdit = function(encodedSpot) {
+            const spot = JSON.parse(decodeURIComponent(encodedSpot));
+            
+            formTitle.innerHTML = '✏️ EDIT HOTSPOT';
+            saveBtn.innerText = 'UPDATE HOTSPOT';
+            cancelBtn.style.display = 'block';
+            
+            // Fill values
+            editIdInput.value = spot.id;
+            inTitle.value = spot.title;
+            inDesc.value = spot.description || "";
+            inPos.value = spot.position;
+            inNorm.value = spot.normal;
+            inOrbit.value = spot.orbit;
+            inTarget.value = spot.target;
+
+            // Scroll mobile users up to the form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- DELETE LOGIC ---
+        window.deleteHotspot = async function(id) {
+            if (!confirm("Are you sure you want to delete this hotspot? This cannot be undone.")) return;
+
+            const { error } = await supabaseClient.from('hotspots').delete().eq('id', id);
+            
+            if (error) {
+                showToast("Error deleting hotspot", "#F44336");
+            } else {
+                showToast("🗑️ Hotspot Deleted", "#4CAF50");
+                if (editIdInput.value === id) resetForm(); // If they deleted the one they were editing
+                loadHotspots();
+            }
+        }
+
+        // --- RESET FORM ---
+        function resetForm() {
+            formTitle.innerHTML = '📍 ADD NEW HOTSPOT';
+            saveBtn.innerText = 'SAVE TO DATABASE';
+            cancelBtn.style.display = 'none';
+            editIdInput.value = "";
+            inTitle.value = "";
+            inDesc.value = "";
+            inPos.value = "";
+            inNorm.value = "0 1 0";
+            inOrbit.value = "";
+            inTarget.value = "";
+        }
+
+        cancelBtn.addEventListener('click', resetForm);
+
+        // --- TOAST UI LOGIC ---
+        function showToast(msg, color) {
+            toast.innerText = msg;
+            toast.style.background = color;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // --- LOGOUT LOGIC ---
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'admin'; // Clean URL navigation!
+        });
+
     </script>
 </body>
 </html>
