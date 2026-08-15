@@ -3,545 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Vicinity Map - SUNN Campuses</title>
-    
-    <!-- Tab Icon -->
-    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Login - SUNN Virtual Campus</title>
     
     <!-- Import League Spartan from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
     
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
-
     <style>
         * {
             box-sizing: border-box;
-        }
-        body {
             margin: 0;
             padding: 0;
+        }
+        body {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             background-color: #1a1a1a;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
-        }
-        
-        /* The 3D Canvas viewport */
-        model-viewer {
-            width: 100%;
-            flex-grow: 1;
-            background-color: #2b2b2b;
-            --poster-color: transparent;
-        }
-        
-        /* --- TOP BRANDING HEADER (Artboard 2) --- */
-        .top-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.15);
-            z-index: 10;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .logo-placeholder {
-            width: 44px;
-            height: 44px;
-            object-fit: contain;
-        }
-        .campus-title {
-            font-family: 'League Spartan', 'Segoe UI', sans-serif;
-            font-size: 16px;
-            font-weight: 800;
-            color: #111;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            max-width: 520px;
-            line-height: 1.15;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            /* Optional: Add a subtle background pattern or blurred image here later */
         }
 
-        /* --- MIKADO YELLOW CAPSTONE BUTTON STYLING --- */
-        .sunn-btn {
-            font-family: 'League Spartan', 'Segoe UI', sans-serif;
-            background-color: #FBBD0D; /* Mikado Yellow */
-            color: #1a1a1a;
+        .login-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .login-header {
+            text-align: center;
+        }
+        .login-header h1 {
+            font-family: 'League Spartan', sans-serif;
+            font-size: 24px;
+            color: #111;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .login-header p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Role Toggle Switch */
+        .role-toggle {
+            display: flex;
+            background: #f1f3f5;
+            border-radius: 12px;
+            padding: 4px;
+            position: relative;
+        }
+        .role-btn {
+            flex: 1;
+            padding: 12px 0;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            background: transparent;
+            font-family: 'League Spartan', sans-serif;
             font-weight: 700;
             font-size: 13px;
-            letter-spacing: 0.8px;
+            color: #888;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        .role-btn.active {
+            color: #1a1a1a;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Input Fields */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .sunn-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #cfd8dc;
+            background: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            color: #1a1a1a;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .sunn-input:focus {
+            border-color: #FBBD0D;
+            background: #ffffff;
+        }
+
+        /* Main Login Button */
+        .submit-btn {
+            width: 100%;
+            background-color: #FBBD0D;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            padding: 10px 20px;
+            padding: 18px;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 15px rgba(251, 189, 13, 0.3);
+            margin-top: 8px;
         }
-        .sunn-btn:hover {
-            background-color: #E0A80B; /* Deeper Mikado Hover State */
+        .submit-btn:hover {
+            background-color: #E0A80B;
             transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
         }
-        .sunn-btn:active {
+        .submit-btn:active {
             transform: translateY(0);
         }
 
-        /* Square Icon Buttons (Top Right) */
-        .icon-btn {
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .icon-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #1a1a1a;
-        }
-
-        /* --- FLOATING CONTROLS --- */
-        .top-right-floating {
-            position: absolute;
-            top: 86px;
-            right: 24px;
-            z-index: 10;
-        }
-        
-        .bottom-controls {
-            position: absolute;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-            backdrop-filter: blur(6px);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-            justify-content: center;
-            z-index: 10;
-        }
-        
-        .bottom-controls select {
-            font-family: 'League Spartan', 'Segoe UI', sans-serif;
-            font-weight: 700;
-            font-size: 13px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #cfd8dc;
-            background-color: #f8f9fa;
-            color: #1a1a1a;
-            outline: none;
-            cursor: pointer;
-        }
-        
-        .divider {
-            width: 1px;
-            height: 24px;
-            background-color: #cfd8dc;
-            margin: 0 4px;
-        }
-
-        /* --- ABOUT MODAL OVERLAY --- */
-        #about-modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-            transition: opacity 0.3s ease, visibility 0.3s;
-        }
-        .modal-content {
-            background: #1a1a1a;
-            color: #aaaaaa;
-            padding: 40px;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 90%;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            line-height: 1.6;
-        }
-        .modal-content h2 {
-            font-family: 'League Spartan', sans-serif;
-            color: #ffffff;
-            margin-top: 0;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-        }
-        .modal-content h3 {
-            font-family: 'League Spartan', sans-serif;
-            color: #ffffff;
-            font-size: 16px;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-        }
-        .modal-content ul {
-            padding-left: 20px;
-            margin-bottom: 25px;
-        }
-        .modal-content li {
-            margin-bottom: 10px;
-        }
-        .modal-content li strong {
-            color: #dddddd;
-        }
-        .developer-credit {
-            font-size: 13px;
-            color: #888888;
-            font-style: italic;
-            border-top: 1px solid #333;
-            padding-top: 15px;
-            margin-top: 10px;
-        }
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            color: #aaaaaa;
-            font-size: 24px;
-            border: none;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .close-btn:hover {
-            color: #ffffff;
-        }
-
-        /* --- LOADING SCREEN OVERLAY --- */
-        #loadingOverlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        #loadingOverlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .loading-box {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 4px solid #cfd8dc;
-            border-top-color: #FBBD0D; /* Mikado Yellow Accent */
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* --- TITLE CARD OVERLAY --- */
-        #title-card {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #111111;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .back-link {
             text-align: center;
-            z-index: 99;
-            transition: opacity 0.8s ease, visibility 0.8s;
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
         }
-        .title-content {
-            max-width: 600px;
-            padding: 40px;
-        }
-        .title-content h1 {
-            font-family: 'League Spartan', sans-serif;
-            font-size: 34px;
-            letter-spacing: 4px;
-            margin: 0 0 5px 0;
-        }
-        .title-content h2 {
-            font-family: 'League Spartan', sans-serif;
-            font-size: 14px;
-            color: #FBBD0D; /* Mikado Yellow Accent */
-            letter-spacing: 3px;
-            margin: 0 0 25px 0;
-        }
-        .title-content p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #aaaaaa;
-            margin-bottom: 40px;
-        }
-        #enter-btn {
-            font-family: 'League Spartan', sans-serif;
-            background: #FBBD0D;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 8px;
-            padding: 14px 38px;
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        #enter-btn:hover {
-            background: #E0A80B;
-            transform: translateY(-2px);
-        }
-        
-        /* Utility class to hide overlays */
-        .hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        /* Responsive scaling for smaller screens */
-        @media (max-width: 768px) {
-            .campus-title { font-size: 11px; max-width: 230px; }
-            .top-header { padding: 0 12px; height: 60px; }
-            .top-right-floating { top: 72px; right: 12px; }
-            .sunn-btn { padding: 8px 14px; font-size: 11px; }
-            .bottom-controls { width: 92%; bottom: 12px; gap: 8px; }
+        .back-link:hover {
+            color: #FBBD0D;
         }
     </style>
 </head>
 <body>
 
-    <!-- Introductory Title Card -->
-    <div id="title-card">
-        <div class="title-content">
+    <div class="login-card">
+        <div class="login-header">
             <h1>SUNN VIRTUAL CAMPUS</h1>
-            <h2>INTERACTIVE 3D EXPLORER</h2>
-            <p>Experience an immersive architectural walkthrough of the campus grounds. Navigate between distinct facilities, explore pedestrian-level views, and interact with the 3D environment.</p>
-            <button id="enter-btn">START EXPLORING</button>
+            <p id="login-subtitle">Sign in to access the campus viewer</p>
         </div>
-    </div>
 
-    <!-- About Menu Modal -->
-    <div id="about-modal" class="hidden">
-        <div class="modal-content">
-            <button id="close-about-btn" class="close-btn">&times;</button>
-            <h2>Interactive 3D Campus Viewer 🏛️</h2>
-            <p>This repository hosts the 3D assets and web interface for my college research capstone project. It features an interactive, web-based 3D viewer designed for seamless architectural exploration and navigation of the SUNN campuses.</p>
-            
-            <h3>Features</h3>
-            <ul>
-                <li><strong>Interactive UI Navigation:</strong> A custom dropdown menu allows users to seamlessly switch between different campus structures.</li>
-                <li><strong>Architectural Exploration:</strong> Users can interact with distinct building meshes and navigate the environment to understand the spatial layout of the campus.</li>
-                <li><strong>Guided Camera Constraints:</strong> Locked ground-level and orbital camera constraints provide a smooth, collision-free walkthrough.</li>
-            </ul>
-            
-            <div class="developer-credit">
-                Developed by Daniel for capstone research presentation.
-            </div>
+        <div class="role-toggle">
+            <button class="role-btn active" id="btn-student">STUDENT</button>
+            <button class="role-btn" id="btn-admin">ADMINISTRATOR</button>
         </div>
-    </div>
 
-    <!-- TOP INSTITUTIONAL HEADER (Artboard 2 Style) -->
-    <header class="top-header">
-        <div class="header-left">
-           <!-- <img src="SUNN.png" alt="SUNN Logo" class="logo-placeholder" onerror="this.style.display='none'"> -->
-            <div class="campus-title">
-             <!--    Interactive Vicinity Map of State University of Northern Negros Campuses -->
-            </div>
+        <div class="input-group">
+            <input type="email" class="sunn-input" id="email" placeholder="Campus Email Address" required>
+            <input type="password" class="sunn-input" id="password" placeholder="Password" required>
         </div>
-        <div class="header-right">
-            <!-- Search Button -->
-            <button class="sunn-btn icon-btn" title="Search Campus Areas" id="searchBtn">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            </button>
-            <!-- Info Button (Opens About Modal) -->
-            <button class="sunn-btn icon-btn" title="Project Information" id="infoBtn">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            </button>
-            <!-- Menu Button (Opens About Modal) -->
-            <button class="sunn-btn icon-btn" title="Open Navigation Menu" id="menu-btn">
-                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-            </button>
-        </div>
-    </header>
 
-    <!-- FLOATING TOP-RIGHT BUTTON -->
-    <div class="top-right-floating">
-        <button class="sunn-btn" id="toggleRotation">Pause Rotation</button>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay">
-        <div class="loading-box">
-            <div class="spinner"></div>
-            <span>Loading Campus Map...</span>
-        </div>
-    </div>
-
-    <!-- MAIN 3D VIEWER -->
-    <model-viewer 
-        id="buildingViewer"
-        src="building.glb"
-        autoplay
-        environment-image="HDRI_puresky_1k.hdr"
-        skybox-image="HDRI_puresky_1k.hdr"
-        camera-controls
-        auto-rotate
-        bounds="tight"
-        camera-orbit="0deg 85deg 40m"
-        camera-target="auto auto auto"
-        min-camera-orbit="auto auto auto"
-        max-camera-orbit="auto 90deg auto"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        exposure="0.8"
-        shadow-intensity="3.2"
-        shadow-softness="1.2"
-        tone-mapping="aces"
-        alt="Interactive 3D view of the campus">
-    </model-viewer>
-
-    <!-- FLOATING BOTTOM-CENTER CONTROLS -->
-    <div class="bottom-controls">
-        <!-- Model Dropdown -->
-        <select id="modelSelector" aria-label="Select Campus Model">
-            <option value="building.glb">Main Building (Present)</option>
-            <option value="Old_Sagay_Campus.glb">Old Campus Compound</option>
-        </select>
+        <button class="submit-btn" id="login-submit">LOGIN AS STUDENT</button>
         
-        <div class="divider"></div>
-
-        <!-- Interactive Action Buttons -->
-        <button class="sunn-btn" id="hotspotBtn">Hotspot</button>
-        <button class="sunn-btn" id="resetCam">Reset View</button>
+        <a href="viewer.html" class="back-link">← Return to Guest View</a>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const viewer = document.getElementById('buildingViewer');
-        const rotateBtn = document.getElementById('toggleRotation');
-        const resetBtn = document.getElementById('resetCam');
-        const hotspotBtn = document.getElementById('hotspotBtn');
-        const modelSelector = document.getElementById('modelSelector');
-        const loadingOverlay = document.getElementById('loadingOverlay');
+        // 1. INITIALIZE SUPABASE
+        const { createClient } = supabase;
         
-        // Modal & Menu Variables
-        const menuBtn = document.getElementById('menu-btn');
-        const infoBtn = document.getElementById('infoBtn');
-        const aboutModal = document.getElementById('about-modal');
-        const closeAboutBtn = document.getElementById('close-about-btn');
+        // PASTE YOUR KEYS HERE! (Keep the quotes around them)
+        const supabaseUrl = 'YOUR_PROJECT_URL_HERE'; 
+        const supabaseKey = 'YOUR_PUBLISHABLE_KEY_HERE'; 
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        // 1. Hide Title Card on Click
-        document.getElementById('enter-btn').addEventListener('click', () => {
-            document.getElementById('title-card').classList.add('hidden');
+        // 2. UI TOGGLE LOGIC
+        const btnStudent = document.getElementById('btn-student');
+        const btnAdmin = document.getElementById('btn-admin');
+        const submitBtn = document.getElementById('login-submit');
+        const subtitle = document.getElementById('login-subtitle');
+
+        let currentRole = 'student';
+
+        btnStudent.addEventListener('click', () => {
+            currentRole = 'student';
+            btnStudent.classList.add('active');
+            btnAdmin.classList.remove('active');
+            submitBtn.innerText = "LOGIN AS STUDENT";
+            subtitle.innerText = "Sign in to explore the 3D campus map";
         });
 
-        // 2. Open About Modal (Menu & Info buttons both trigger it)
-        menuBtn.addEventListener('click', () => {
-            aboutModal.classList.remove('hidden');
-        });
-        infoBtn.addEventListener('click', () => {
-            aboutModal.classList.remove('hidden');
+        btnAdmin.addEventListener('click', () => {
+            currentRole = 'admin';
+            btnAdmin.classList.add('active');
+            btnStudent.classList.remove('active');
+            submitBtn.innerText = "ACCESS ADMIN PORTAL";
+            subtitle.innerText = "Sign in to manage hotspots and routes";
         });
 
-        // 3. Close About Modal
-        closeAboutBtn.addEventListener('click', () => {
-            aboutModal.classList.add('hidden');
-        });
-        aboutModal.addEventListener('click', (event) => {
-            if (event.target === aboutModal) {
-                aboutModal.classList.add('hidden');
+        // 3. REAL AUTHENTICATION LOGIC
+        submitBtn.addEventListener('click', async () => {
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            
+            // Check if fields are empty
+            if (!emailInput || !passwordInput) {
+                alert("Please enter both your email and password.");
+                return;
             }
-        });
 
-        // 4. Show loading screen when a new model is selected
-        modelSelector.addEventListener('change', (event) => {
-            loadingOverlay.classList.add('active'); 
-            viewer.src = event.target.value;        
-        });
+            // Visual feedback: Change button text while loading
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = "AUTHENTICATING...";
+            submitBtn.style.pointerEvents = "none"; // Prevent double-clicking
 
-        // 5. Hide loading screen when the model finishes loading
-        viewer.addEventListener('load', () => {
-            loadingOverlay.classList.remove('active');
-            viewer.cameraTarget = "auto auto auto";
-            viewer.cameraOrbit = "0deg 85deg 200m";
-        });
+            // Send credentials to Supabase
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: emailInput,
+                password: passwordInput,
+            });
 
-        // 6. Toggle Auto-Rotation
-        rotateBtn.addEventListener('click', () => {
-            if (viewer.hasAttribute('auto-rotate')) {
-                viewer.removeAttribute('auto-rotate');
-                rotateBtn.innerText = "Start Rotation";
+            if (error) {
+                // Login Failed! Show error and reset button
+                alert("Login Failed: " + error.message);
+                submitBtn.innerText = originalText;
+                submitBtn.style.pointerEvents = "auto";
             } else {
-                viewer.setAttribute('auto-rotate', '');
-                rotateBtn.innerText = "Pause Rotation";
+                // Login Successful! 
+                // Later we will check if they are an admin or student, 
+                // but for now, send everyone to the map!
+                window.location.href = "viewer.html"; 
             }
-        });
-
-        // 7. Reset View back to Default
-        resetBtn.addEventListener('click', () => {
-            viewer.cameraOrbit = "45deg 85deg 180m";
-            viewer.cameraTarget = "auto auto auto";
-            viewer.orientation = "0deg 0deg 0deg";
-        });
-
-        // 8. Hotspot Placeholder Notice
-        hotspotBtn.addEventListener('click', () => {
-            alert("Hotspot markers will be connected here!");
         });
     </script>
 </body>
