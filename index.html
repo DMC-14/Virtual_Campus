@@ -372,51 +372,27 @@
         @media (max-width: 768px) {
             .campus-title { display: none; } 
             
-            .top-header { 
-                top: 16px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 92%; 
-                height: 60px;
-                border-radius: 16px;
-                padding: 0 12px;
-                justify-content: flex-start;
-                gap: 12px;
-            }
-
-            .bottom-controls { 
-                width: 92%; 
-                bottom: 16px; 
-                padding: 16px;
-                border-radius: 20px;
-            }
-            .mobile-panel-title { display: block; }
+            /* ... (keep your other mobile CSS up here) ... */
             
-            .bottom-action-row .sunn-btn { 
-                flex: 1; 
-                padding: 16px 8px; 
-                font-size: 12px; 
-                border-radius: 12px; 
-                min-height: 48px; 
-            }
-            .dropdown-trigger {
-                min-height: 48px;
-            }
-            .icon-circle-btn { 
-                width: 48px; 
-                height: 48px; 
-                background-color: #d1d5db; 
-            }
             #info-panel { padding-top: 100px; } 
 
-            /* Mobile Layout for Info Card - Slides down from under the header */
+            /* Mobile Layout for Info Card - Slides UP from above bottom controls */
             #hotspot-info-card {
-                top: 85px; 
+                top: auto; /* Removes the top anchor */
+                bottom: 190px; /* Sits cleanly above your bottom navigation menu */
                 left: 50%;
                 width: 92%;
-                transform: translate(-50%, -20px); 
+                transform: translate(-50%, 30px); /* Starts slightly lower for animation */
             }
-            #hotspot-info-card.active { transform: translate(-50%, 0); }
+            
+            #hotspot-info-card.active { 
+                transform: translate(-50%, 0); 
+            }
+
+            /* Prevents long text from making the card too tall on small screens */
+            #hotspot-info-card .card-body {
+                max-height: 32vh; 
+            }
         }
     </style>
 </head>
