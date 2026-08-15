@@ -765,12 +765,13 @@
         
         let currentSelectedRoute = "none";
 
-        // Toggle Campus Dropdown
+       // Toggle Campus Dropdown
         campusTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
             campusContainer.classList.toggle('open');
             destContainer.classList.remove('open'); 
-            infoPanel.classList.remove('show');     
+            infoPanel.classList.remove('show');   
+            infoCard.classList.remove('active'); // <-- NEW: Closes the Info Card instantly
         });
 
         // Toggle Destination Dropdown
@@ -779,6 +780,7 @@
             destContainer.classList.toggle('open');
             campusContainer.classList.remove('open'); 
             infoPanel.classList.remove('show');
+            infoCard.classList.remove('active'); // <-- NEW: Closes the Info Card instantly
         });
 
         // Close dropdowns when clicking anywhere else on the screen
