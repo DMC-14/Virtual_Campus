@@ -287,9 +287,12 @@
             position: fixed;
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
             z-index: 999;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* NEW: Expressive spring physics! */
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -353,19 +356,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.2s;
         }
-        #close-card-btn:hover { background: rgba(0,0,0,0.2); }
+        #close-card-btn:hover { 
+            background: rgba(0,0,0,0.2); 
+            transform: scale(1.1); /* Little bounce on the close button! */
+        }
 
-        /* PC Layout (Desktop) - Slides in from the right */
+        /* PC Layout (Desktop) - Springs in from the right */
         @media (min-width: 769px) {
             #hotspot-info-card {
                 top: 90px;
                 right: 24px;
                 width: 340px;
-                transform: translateX(30px);
+                /* Starts slightly shrunken and pushed right */
+                transform: translateX(40px) scale(0.9);
             }
-            #hotspot-info-card.active { transform: translateX(0); }
+            #hotspot-info-card.active { 
+                /* Springs into full size */
+                transform: translateX(0) scale(1); 
+            }
         }
 
         /* --- FIGMA MOBILE RESPONSIVE LAYOUT --- */
@@ -409,50 +419,54 @@
             }
             #info-panel { padding-top: 100px; } 
 
-            /* Mobile Layout for Info Card - Slides UP from above bottom controls */
+            /* Mobile Layout for Info Card - Springs UP from bottom */
             #hotspot-info-card {
                 top: auto; 
                 bottom: 190px; 
                 left: 50%;
                 width: 92%;
-                transform: translate(-50%, 30px); 
+                /* Starts slightly shrunken and pushed down */
+                transform: translate(-50%, 40px) scale(0.95); 
             }
             
             #hotspot-info-card.active { 
-                transform: translate(-50%, 0); 
+                /* Springs into full size */
+                transform: translate(-50%, 0) scale(1); 
             }
 
-            /* --- NEW: MOBILE TAP-TO-EXPAND DRAWER --- */
+            /* --- MOBILE TAP-TO-EXPAND DRAWER --- */
             #hotspot-info-card .card-header {
                 cursor: pointer;
             }
             
-            /* Adds a little visual indicator that it can be tapped */
             #card-title::after {
                 content: ' ▲';
                 font-size: 10px;
                 opacity: 0.6;
                 display: inline-block;
                 margin-left: 8px;
-                transition: transform 0.3s;
+                /* Smooth arrow flip */
+                transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             }
             
-            /* Flips the arrow when open */
             #hotspot-info-card.expanded #card-title::after {
                 transform: rotate(180deg);
             }
 
-            /* 1. START COLLAPSED: Hides the body by default on mobile */
+            /* 1. START COLLAPSED */
             #hotspot-info-card .card-body {
                 max-height: 0;
                 padding-top: 0;
                 padding-bottom: 0;
                 opacity: 0;
                 overflow: hidden;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                /* Spring applied to the dropdown drawer height */
+                transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                            opacity 0.3s ease, 
+                            padding 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             }
 
-            /* 2. EXPANDED STATE: Reveals the body when tapped */
+            /* 2. EXPANDED STATE */
             #hotspot-info-card.expanded .card-body {
                 max-height: 35vh; 
                 padding: 16px;
@@ -863,19 +877,31 @@
         menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             infoPanel.classList.toggle('show');
+            
+            // Close the dropdowns
             campusContainer.classList.remove('open');
             destContainer.classList.remove('open');
+            
+            // NEW: Instantly dismiss the hotspot info card so they don't overlap!
+            if (infoCard) {
+                infoCard.classList.remove('active');
+                infoCard.classList.remove('expanded');
+            }
         });
         
         infoBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             infoPanel.classList.toggle('show');
+            
+            // Close the dropdowns
             campusContainer.classList.remove('open');
             destContainer.classList.remove('open');
-        });
-
-        viewer.addEventListener('click', () => {
-            infoPanel.classList.remove('show');
+            
+            // NEW: Instantly dismiss the hotspot info card so they don't overlap!
+            if (infoCard) {
+                infoCard.classList.remove('active');
+                infoCard.classList.remove('expanded');
+            }
         });
 
         // --- Camera & View Configurations ---
