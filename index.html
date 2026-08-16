@@ -726,9 +726,8 @@
 
        // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
         async function loadLiveHotspots() {
-            // 1. SAFELY figure out which campus model is currently on the screen
-            // getAttribute reads the raw HTML, preventing the 'undefined' crash on page load!
-            const viewerUrl = viewer.getAttribute('src');
+            // Read the live property (safely handled by the load event now)
+            const viewerUrl = viewer.src;
             
             // Extra safety net: If it's still missing somehow, stop the script so it doesn't crash
             if (!viewerUrl) return; 
@@ -788,9 +787,6 @@
                 viewer.appendChild(btn);
             });
         }
-
-        // Trigger data fetch on page load
-        loadLiveHotspots();
 
         // 3. LISTEN FOR REAL-TIME DATABASE CHANGES (The Magic Auto-Update)
         supabaseClient
