@@ -726,13 +726,14 @@
 
        // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
         async function loadLiveHotspots() {
-            // Read the live property (safely handled by the load event now)
             const viewerUrl = viewer.src;
-            
-            // Extra safety net: If it's still missing somehow, stop the script so it doesn't crash
             if (!viewerUrl) return; 
             
-            const activeCampus = viewerUrl.split('/').pop(); // Extracts 'test.glb' or 'old_campus_opti1.glb'
+            // 1. Extract filename and STRIP any hidden URL parameters just in case!
+            let activeCampus = viewerUrl.split('/').pop(); 
+            activeCampus = activeCampus.split('?')[0]; // Turns "test.glb?v=1" into just "test.glb" safely
+
+            console.log("🔍 MAP IS LOOKING FOR:", activeCampus);
 
             // 2. ONLY fetch the hotspots that are tagged with this specific campus!
             const { data: hotspots, error } = await supabaseClient
@@ -741,9 +742,11 @@
                 .eq('campus_id', activeCampus); // <-- THE MAGIC FILTER!
             
             if (error) {
-                console.error("Failed to load hotspots:", error);
+                console.error("❌ Failed to load hotspots:", error);
                 return;
             }
+
+            console.log("✅ SUPABASE FOUND THESE PINS:", hotspots);
 
             hotspots.forEach((spot, index) => {
                 const btn = document.createElement('button');
