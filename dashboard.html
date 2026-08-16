@@ -22,6 +22,10 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+
+            /* NEW: Hide the dashboard by default to prevent visual leaks */
+            opacity: 0; 
+            transition: opacity 0.4s ease;
         }
 
         .dashboard-wrapper {
@@ -304,13 +308,28 @@
         async function checkAuth() {
             const { data, error } = await supabaseClient.auth.getSession();
             if (!data.session) {
-                // If not logged in, kick them back to admin login
-                window.location.href = 'admin'; 
+                // If not logged in, securely kick them out without saving to history
+                window.location.replace('admin'); 
             } else {
+                // Security passed! Reveal the dashboard UI.
+                document.body.style.opacity = '1';
                 loadHotspots();
             }
         }
         checkAuth();
+
+        // --- LOGOUT LOGIC ---
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.replace('admin'); // Clean URL navigation!
+        });
+        // --- PREVENT BFCACHE (Back/Forward Cache) EXPLOIT ---
+        window.addEventListener('pageshow', (event) => {
+            // If the browser loaded this page from its cache history, force a re-check!
+            if (event.persisted) {
+                checkAuth();
+            }
+        });
 
         // --- READ: LOAD HOTSPOTS FROM DATABASE ---
         async function loadHotspots() {

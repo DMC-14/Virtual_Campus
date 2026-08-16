@@ -104,7 +104,7 @@
         async function checkExistingSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                window.location.replace("dashboard.html");
+                window.location.replace("dashboard");
             }
         }
         checkExistingSession();
@@ -133,7 +133,7 @@
                 submitBtn.style.pointerEvents = "auto";
             } else {
                 // Login Successful! Redirect to the Dashboard we will build next.
-                window.location.href = "dashboard.html"; 
+                window.location.replace("dashboard"); 
             }
         });
     </script>
