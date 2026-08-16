@@ -969,15 +969,21 @@
         });
 
         viewer.addEventListener('load', () => {
-            loadingOverlay.classList.remove('active');
+            
             viewer.cameraTarget = "auto auto auto";
             viewer.cameraOrbit = "45deg 85deg 480m";
             hideAllPaths();
             setXrayMode(false);
 
-            // NEW: Wipe the old pins and load the correct pins for this new campus!
+            // Wipe the old pins and load the correct pins for this new campus
             document.querySelectorAll('.sunn-hotspot').forEach(pin => pin.remove());
             loadLiveHotspots();
+
+            // NEW: The Loading Delay! 
+            // Keeps the white screen up for an extra 1.5 seconds to hide the jagged/blurry phase from the user.
+            setTimeout(() => {
+                loadingOverlay.classList.remove('active');
+            }, 1500); 
         });
 
         function isPathMaterial(matName) { return matName.includes("Mat_to_"); }
