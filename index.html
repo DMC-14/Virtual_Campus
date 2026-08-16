@@ -726,7 +726,10 @@
 
         // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
         async function loadLiveHotspots() {
-            const { data: hotspots, error } = await supabaseClient.from('hotspots').select('*');
+            // 1. Figure out exactly which campus model is currently on the screen
+            const viewerUrl = viewer.src;
+            const activeCampus = viewerUrl.split('/').pop();
+            const { data: hotspots, error } = await supabaseClient.from('hotspots').select('*').eq('campus_id', activeCampus);
             
             if (error) {
                 console.error("Failed to load hotspots:", error);
@@ -961,6 +964,10 @@
             viewer.cameraOrbit = "45deg 85deg 480m";
             hideAllPaths();
             setXrayMode(false);
+
+            // NEW: Wipe the old pins and load the correct pins for this new campus!
+            document.querySelectorAll('.sunn-hotspot').forEach(pin => pin.remove());
+            loadLiveHotspots();
         });
 
         function isPathMaterial(matName) { return matName.includes("Mat_to_"); }
