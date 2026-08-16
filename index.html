@@ -970,12 +970,14 @@
             return name.includes("base") || name.includes("road.1") || name.includes("road.2") || name.includes("x");
         }
 
-        function setXrayMode(enabled) {
+        // 2. Upgraded to async
+        async function setXrayMode(enabled) {
             const materials = viewer.model.materials;
             if (!materials) return;
             for (let i = 0; i < materials.length; i++) {
                 const mat = materials[i];
                 if (!isPathMaterial(mat.name)) {
+                    await mat.ensureLoaded(); // <-- The magic fix!
                     const [r, g, b] = mat.pbrMetallicRoughness.baseColorFactor;
                     if (isGroundMaterial(mat.name)) {
                         mat.setAlphaMode('OPAQUE');
@@ -991,12 +993,14 @@
             }
         }
 
-        function hideAllPaths() {
+        // 1. Upgraded to async
+        async function hideAllPaths() {
             const materials = viewer.model.materials;
             if (!materials) return;
             for (let i = 0; i < materials.length; i++) {
                 const mat = materials[i];
                 if (isPathMaterial(mat.name)) {
+                    await mat.ensureLoaded(); // <-- The magic fix!
                     mat.setAlphaMode('BLEND');
                     mat.pbrMetallicRoughness.setBaseColorFactor([1, 0.2, 0, 0]); 
                 }
@@ -1014,8 +1018,9 @@
             return orbitStr;
         }
 
-        function showSelectedRoute() {
-            hideAllPaths();
+        // 3. Upgraded to async
+        async function showSelectedRoute() {
+            await hideAllPaths(); // Wait for paths to hide first
             
             if (currentSelectedRoute !== "none") {
                 
@@ -1034,6 +1039,7 @@
                     const mat = materials[i];
                     
                     if (mat.name.toLowerCase().includes(currentSelectedRoute.toLowerCase())) {
+                        await mat.ensureLoaded(); // <-- The magic fix!
                         mat.setAlphaMode('OPAQUE');
                         if (mat.name.includes("_pin") || mat.name.includes("pin")) {
                             mat.pbrMetallicRoughness.setBaseColorFactor([0.9, 0.05, 0.05, 1.0]);
@@ -1045,17 +1051,17 @@
                 }
 
                 if (matchFound) {
-                    setXrayMode(true);
+                    await setXrayMode(true); // Wait for X-Ray to apply
                     const viewConfig = officeViews[currentSelectedRoute];
                     if (viewConfig) {
                         viewer.cameraTarget = viewConfig.target;
                         viewer.cameraOrbit = getResponsiveOrbit(viewConfig.orbit);
                     }
                 } else {
-                    setXrayMode(false);
+                    await setXrayMode(false);
                 }
             } else {
-                setXrayMode(false);
+                await setXrayMode(false);
             }
         }
 
