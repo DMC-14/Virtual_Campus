@@ -724,12 +724,22 @@
             infoCard.classList.toggle('expanded');
         });
 
-        // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
+       // --- 2. FETCH AND INJECT DYNAMIC HOTSPOTS ---
         async function loadLiveHotspots() {
-            // 1. Figure out exactly which campus model is currently on the screen
-            const viewerUrl = viewer.src;
-            const activeCampus = viewerUrl.split('/').pop();
-            const { data: hotspots, error } = await supabaseClient.from('hotspots').select('*').eq('campus_id', activeCampus);
+            // 1. SAFELY figure out which campus model is currently on the screen
+            // getAttribute reads the raw HTML, preventing the 'undefined' crash on page load!
+            const viewerUrl = viewer.getAttribute('src');
+            
+            // Extra safety net: If it's still missing somehow, stop the script so it doesn't crash
+            if (!viewerUrl) return; 
+            
+            const activeCampus = viewerUrl.split('/').pop(); // Extracts 'test.glb' or 'old_campus_opti1.glb'
+
+            // 2. ONLY fetch the hotspots that are tagged with this specific campus!
+            const { data: hotspots, error } = await supabaseClient
+                .from('hotspots')
+                .select('*')
+                .eq('campus_id', activeCampus); // <-- THE MAGIC FILTER!
             
             if (error) {
                 console.error("Failed to load hotspots:", error);
